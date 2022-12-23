@@ -13,13 +13,13 @@ common_wand = Items(Name="Обычный посох", Cost=10, CostToSale=8, Ite
                     MagicAttack=2, Armour=0, MagicArmour=0, ReqLevel=1, Availability=1)
 uncommon_wand = Items(Name="Необычный посох", Cost=25, CostToSale=15, ItemType='weapon', HP=0, Mana=0, Attack=0,
                     MagicAttack=4, Armour=0, MagicArmour=0, ReqLevel=2, Availability=2)
-old_jacket = Items(Name="Старая куртка", Cost=18, CostToSale=8, ItemType='armour', HP=5, Mana=0, Attack=0,
+old_jacket = Items(Name="Старая куртка", Cost=10, CostToSale=8, ItemType='armour', HP=5, Mana=0, Attack=0,
                     MagicAttack=0, Armour=2, MagicArmour=0, ReqLevel=1, Availability=1)
-sturdy_jacket = Items(Name="Крепкая куртка", Cost=20, CostToSale=8, ItemType='armour', HP=10, Mana=0, Attack=0,
+sturdy_jacket = Items(Name="Крепкая куртка", Cost=20, CostToSale=18, ItemType='armour', HP=10, Mana=0, Attack=0,
                     MagicAttack=0, Armour=4, MagicArmour=0, ReqLevel=2, Availability=2)
-common_helmet = Items(Name="Обычный шлем", Cost=5, CostToSale=8, ItemType='helmet', HP=2, Mana=0, Attack=0,
+common_helmet = Items(Name="Обычный шлем", Cost=5, CostToSale=3, ItemType='helmet', HP=2, Mana=0, Attack=0,
                     MagicAttack=0, Armour=1, MagicArmour=0, ReqLevel=1, Availability=1)
-common_boots = Items(Name="Обычные ботинки", Cost=4, CostToSale=8, ItemType='boots', HP=2, Mana=0, Attack=0,
+common_boots = Items(Name="Обычные ботинки", Cost=4, CostToSale=2, ItemType='boots', HP=2, Mana=0, Attack=0,
                     MagicAttack=0, Armour=1, MagicArmour=0, ReqLevel=1, Availability=1)
 session.add_all([common_sword, sharp_sword, common_wand, uncommon_wand, old_jacket, sturdy_jacket, common_helmet, common_boots])
 session.commit()
@@ -37,8 +37,8 @@ session.add(dwemer_ruins)
 session.commit()
 
 
-cobalt = Mobs(MobName='Кобальт', HP=10, XP=15, Money=5, ReqLevel=1, AttackType='phys', Attack=1, Armour=0, MagicArmour=0)
-candle_cobalt = Mobs(MobName='Кобальт со свечой', HP=20, XP=30, Money=10, ReqLevel=1, AttackType='phys', Attack=3, Armour=2, MagicArmour=0)
+cobalt = Mobs(MobName='Кобольд', HP=10, XP=15, Money=5, ReqLevel=1, AttackType='phys', Attack=2, Armour=0, MagicArmour=0)
+candle_cobalt = Mobs(MobName='Кобольд со свечой', HP=20, XP=30, Money=10, ReqLevel=1, AttackType='phys', Attack=4, Armour=2, MagicArmour=0)
 session.add(cobalt)
 session.add(candle_cobalt)
 
