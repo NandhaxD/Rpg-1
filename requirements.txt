@@ -1,4 +1,5 @@
-numpy==1.23.3
-pyTelegramBotAPI==4.8.0
-SQLAlchemy==1.4.45
+numpy
+pyTelegramBotAPI
+SQLAlchemy
+aiohttp
 sqlite
