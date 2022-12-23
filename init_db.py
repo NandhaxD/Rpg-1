@@ -21,7 +21,9 @@ common_helmet = Items(Name="Обычный шлем", Cost=5, CostToSale=3, Item
                     MagicAttack=0, Armour=1, MagicArmour=0, ReqLevel=1, Availability=1)
 common_boots = Items(Name="Обычные ботинки", Cost=4, CostToSale=2, ItemType='boots', HP=2, Mana=0, Attack=0,
                     MagicAttack=0, Armour=1, MagicArmour=0, ReqLevel=1, Availability=1)
-session.add_all([common_sword, sharp_sword, common_wand, uncommon_wand, old_jacket, sturdy_jacket, common_helmet, common_boots])
+common_hp = Items(Name="Зелье здоровья", Cost=5, CostToSale=3, ItemType='potion', HP=5, Mana=0, Attack=0,
+                    MagicAttack=0, Armour=0, MagicArmour=0, ReqLevel=1, Availability=1)
+session.add_all([common_sword, sharp_sword, common_wand, uncommon_wand, old_jacket, sturdy_jacket, common_helmet, common_boots, common_hp])
 session.commit()
 
 
