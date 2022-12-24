@@ -38,13 +38,13 @@ shop_markup_2 = types.InlineKeyboardMarkup()
 back_shop_town = types.InlineKeyboardButton("Назад", callback_data='back_town')
 items_1 = session.execute(select(Items).where(Items.Availability == 1))
 items_2 = session.execute(select(Items).where(Items.Availability == 2))
-for el in items_1:
-    t_item = types.InlineKeyboardButton(f"Купить {el.Items.Name}: {el.Items.Cost} 💎",
-                                        callback_data=f'buy_{el.Items.ItemID}')
+for item_1 in items_1:
+    t_item = types.InlineKeyboardButton(f"Купить {item_1.Items.Name}: {item_1.Items.Cost} 💎",
+                                        callback_data=f'buy_{item_1.Items.ItemID}')
     shop_markup_1.add(t_item)
-for el in items_2:
-    t_item = types.InlineKeyboardButton(f"Купить {el.Items.Name}: {el.Items.Cost} 💎",
-                                        callback_data=f'buy_{el.Items.ItemID}')
+for item_2 in items_2:
+    t_item = types.InlineKeyboardButton(f"Купить {item_2.Items.Name}: {item_2.Items.Cost} 💎",
+                                        callback_data=f'buy_{item_2.Items.ItemID}')
     shop_markup_2.add(t_item)
 shop_markup_1.add(back_shop_town)
 shop_markup_2.add(back_shop_town)
@@ -84,25 +84,25 @@ check_markup.add(attack)
 back_location_town = types.InlineKeyboardButton("Назад", callback_data='back_town')
 back_location_dungeon = types.InlineKeyboardButton("Назад", callback_data='back_dungeon')
 destinations = session.execute(select(Locations))
-for el in destinations:
-    el_x = session.execute(select(Locations.XCoord).where(Locations.LocationID == el.Locations.LocationID)).scalar()
-    el_y = session.execute(select(Locations.YCoord).where(Locations.LocationID == el.Locations.LocationID)).scalar()
+for destination in destinations:
+    el_x = session.execute(select(Locations.XCoord).where(Locations.LocationID == destination.Locations.LocationID)).scalar()
+    el_y = session.execute(select(Locations.YCoord).where(Locations.LocationID == destination.Locations.LocationID)).scalar()
     dist_1 = count_distance(x_1, y_1, el_x, el_y)
     dist_2 = count_distance(x_2, y_2, el_x, el_y)
     dist_3 = count_distance(x_3, y_3, el_x, el_y)
     dist_4 = count_distance(x_4, y_4, el_x, el_y)
     if 0 < dist_1 <= 10:
-        choose_location_1_markup.add(types.InlineKeyboardButton(f"Отправиться: {el.Locations.LocationName}",
-                                                                callback_data=f'go_{el.Locations.LocationID}'))
+        choose_location_1_markup.add(types.InlineKeyboardButton(f"Отправиться: {destination.Locations.LocationName}",
+                                                                callback_data=f'go_{destination.Locations.LocationID}'))
     if 0 < dist_2 <= 10:
-        choose_location_2_markup.add(types.InlineKeyboardButton(f"Отправиться: {el.Locations.LocationName}",
-                                                                callback_data=f'go_{el.Locations.LocationID}'))
+        choose_location_2_markup.add(types.InlineKeyboardButton(f"Отправиться: {destination.Locations.LocationName}",
+                                                                callback_data=f'go_{destination.Locations.LocationID}'))
     if 0 < dist_3 <= 10:
-        choose_location_3_markup.add(types.InlineKeyboardButton(f"Отправиться: {el.Locations.LocationName}",
-                                                                callback_data=f'go_{el.Locations.LocationID}'))
+        choose_location_3_markup.add(types.InlineKeyboardButton(f"Отправиться: {destination.Locations.LocationName}",
+                                                                callback_data=f'go_{destination.Locations.LocationID}'))
     if 0 < dist_4 <= 10:
-        choose_location_4_markup.add(types.InlineKeyboardButton(f"Отправиться: {el.Locations.LocationName}",
-                                                                callback_data=f'go_{el.Locations.LocationID}'))
+        choose_location_4_markup.add(types.InlineKeyboardButton(f"Отправиться: {destination.Locations.LocationName}",
+                                                                callback_data=f'go_{destination.Locations.LocationID}'))
 choose_location_1_markup.add(back_location_town)
 choose_location_2_markup.add(back_location_town)
 choose_location_3_markup.add(back_location_dungeon)
@@ -194,10 +194,6 @@ async def handle(call):
     cur_loc_x = session.execute(select(Locations.XCoord).where(Locations.LocationID == cur_loc)).scalar()
     cur_loc_y = session.execute(select(Locations.YCoord).where(Locations.LocationID == cur_loc)).scalar()
     if call.data == "shop":
-        # text = ''
-        # available_items = session.execute(select(Items).where(Items.Availability == loc_id))
-        # for el in available_items:
-        #     text += f"{el.Items.Name}: {el.Items.Cost} 💎\n\n"
         if cur_loc == 1:
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                         text=f"🛒 *Добро пожаловать в магазин!*", reply_markup=shop_markup_1,
