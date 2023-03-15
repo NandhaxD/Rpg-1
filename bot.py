@@ -1,12 +1,11 @@
 from telebot.async_telebot import AsyncTeleBot, types
 import sqlite3
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine, select
-from sqlalchemy.orm import Session
+from sqlalchemy import select
 from math import floor
 import numpy
 import asyncio
 
+from init_session import session
 from functions import count_distance, get_town, get_map, get_dungeon, go_loc
 from classes import Enemy, Inventory, Persons, Items, Mobs, Locations
 
@@ -14,11 +13,6 @@ TOKEN = '5953711879:AAFVh4Chk58HE8ovsBXdT6zwq_yU5IozZ9s'
 bot = AsyncTeleBot(TOKEN)
 
 db = sqlite3.connect('gametools.db')
-engine = create_engine('sqlite+pysqlite:///gametools.db', echo=True)
-Base = declarative_base()
-
-Base.metadata.create_all(engine)
-session = Session(engine)
 
 
 # интерфейс городов

@@ -1,6 +1,8 @@
 from sqlalchemy import select
-from bot import bot, session, choose_location_1_markup, choose_location_2_markup, choose_location_3_markup, choose_location_4_markup, dungeon_gate_markup, town_markup
+import bot
+from init_session import session
 from classes import Persons, Locations
+
 
 async def go_loc(username, loc_id, call):
     stmt = select(Persons).where(Persons.Nickname == username)
@@ -22,16 +24,16 @@ async def get_town(call):
     stmt = select(Persons).where(Persons.Nickname == call.from_user.username)
     player = session.scalars(stmt).one()
     player.CurHP = player.HP
-    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                text=f"Ты в городе: 🏰 *{cur_town}*", reply_markup=town_markup, parse_mode="Markdown")
+    await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
+                                text=f"Ты в городе: 🏰 *{cur_town}*", reply_markup=bot.town_markup, parse_mode="Markdown")
 
 
 async def get_dungeon(call):
     cur_dungeon_id = session.execute(
         select(Persons.LocationID).where(Persons.Nickname == call.from_user.username)).scalar()
     cur_dungeon = session.execute(select(Locations.LocationName).where(Locations.LocationID == cur_dungeon_id)).scalar()
-    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                text=f"Ты в данже: ⛰️ *{cur_dungeon}*", reply_markup=dungeon_gate_markup,
+    await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
+                                text=f"Ты в данже: ⛰️ *{cur_dungeon}*", reply_markup=bot.dungeon_gate_markup,
                                 parse_mode="Markdown")
 
 
@@ -47,20 +49,20 @@ async def get_map(call):
         if 0 < dist <= 10:
             text += f"{el.Locations.LocationName} - {dist} км 🛣️\n\n"
     if cur_town_id == 1:
-        await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=text, reply_markup=choose_location_1_markup,
+        await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
+                                    text=text, reply_markup=bot.choose_location_1_markup,
                                     parse_mode="Markdown")
     elif cur_town_id == 2:
-        await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=text, reply_markup=choose_location_2_markup,
+        await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
+                                    text=text, reply_markup=bot.choose_location_2_markup,
                                     parse_mode="Markdown")
     elif cur_town_id == 3:
-        await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=text, reply_markup=choose_location_3_markup,
+        await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
+                                    text=text, reply_markup=bot.choose_location_3_markup,
                                     parse_mode="Markdown")
     elif cur_town_id == 4:
-        await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=text, reply_markup=choose_location_4_markup,
+        await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
+                                    text=text, reply_markup=bot.choose_location_4_markup,
                                     parse_mode="Markdown")
 
 

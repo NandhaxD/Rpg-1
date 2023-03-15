@@ -1,4 +1,4 @@
-from bot import session, Base
+from init_session import session, Base
 import asyncio
 from sqlalchemy import Column, Integer, String, select
 

@@ -1,5 +1,6 @@
 import asyncio
-from bot import bot, session
+from bot import bot
+from init_session import session
 from sqlalchemy import select
 from classes import Persons
 
@@ -18,3 +19,4 @@ if __name__ == '__main__':
             user.CurHP = user.HP
             user.LocationID = 1
             session.commit()
+        session.close()
