@@ -1,9 +1,5 @@
-import motor.motor_asyncio
 from bson.objectid import ObjectId
-from config import MONGO_DB
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DB)
-db = client.Rpg
+from Sylvie import *
 
 async def get_item_by_name(name):
     item = await db.items.find_one({'Name': name})
