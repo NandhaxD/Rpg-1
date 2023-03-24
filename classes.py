@@ -29,7 +29,7 @@ class Timer:
 
 
 class Persons(Base):
-    __tablename__ = 'Persons'  # имя таблицы
+    __tablename__ = 'Persons'  # table name
     UserID = Column(Integer, name='UserID', primary_key=True)
     Nickname = Column(String)
     Level = Column(Integer)
@@ -45,7 +45,7 @@ class Persons(Base):
 
 
 class Mobs(Base):
-    __tablename__ = 'Mobs'  # имя таблицы
+    __tablename__ = 'Mobs'  # table name
     MobID = Column(Integer, primary_key=True)
     MobName = Column(String)
     HP = Column(Integer)
@@ -89,5 +89,5 @@ class Inventory(Base):
     UserID = Column(Integer, primary_key=True)
     Nickname = Column(String)
     ItemID = Column(Integer)
-    Quantity = Column(Integer)  # положительная - в инвентаре несколько таких вещей, одна из них надета
-    # отрицательная - в инвентаре несколько, не надета
+    Quantity = Column(Integer)  # positive - there are several such things in the inventory, one of them is worn
+    # negative - several in inventory, not worn
