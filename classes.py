@@ -1,93 +1,94 @@
-from init_session import session, Base
 import asyncio
-from sqlalchemy import Column, Integer, String, select
+import motor.motor_asyncio
+from bson.objectid import ObjectId
 
+# Set up the Motor client
+client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://localhost:27017')
+db = client['my_database']
 
+# Define the classes
 class Enemy:
     def __init__(self, id):
-        enemy = session.execute(select(Mobs).where(Mobs.MobID == int(id))).one()
-        self.name = enemy.Mobs.MobName
-        self.hp = enemy.Mobs.HP
-        self.attack = enemy.Mobs.Attack
-        self.armour = enemy.Mobs.Armour
-        self.m_armour = enemy.Mobs.MagicArmour
-        self.xp = enemy.Mobs.XP
-        self.attack_type = enemy.Mobs.AttackType
-        self.money = enemy.Mobs.Money
+        self.enemy = await db.mobs.find_one({"_id": ObjectId(id)})
+        self.name = self.enemy["MobName"]
+        self.hp = self.enemy["HP"]
+        self.attack = self.enemy["Attack"]
+        self.armour = self.enemy["Armour"]
+        self.m_armour = self.enemy["MagicArmour"]
+        self.xp = self.enemy["XP"]
+        self.attack_type = self.enemy["AttackType"]
+        self.money = self.enemy["Money"]
 
 class Timer:
-
     async def start(self):
         await asyncio.sleep(60)
         if not self.answer:
             return False
         else:
             return True
-
     def __init__(self):
         self.answer = False
 
+class Persons:
+    def __init__(self, data):
+        self.user = data
+        self.user_id = data["_id"]
+        self.nickname = data["Nickname"]
+        self.level = data["Level"]
+        self.hp = data["HP"]
+        self.cur_hp = data["CurHP"]
+        self.money = data["Money"]
+        self.attack = data["Attack"]
+        self.magic_attack = data["MagicAttack"]
+        self.xp = data["XP"]
+        self.armour = data["Armour"]
+        self.magic_armour = data["MagicArmour"]
+        self.location_id = data["LocationID"]
 
-class Persons(Base):
-    __tablename__ = 'Persons'  # table name
-    UserID = Column(Integer, name='UserID', primary_key=True)
-    Nickname = Column(String)
-    Level = Column(Integer)
-    HP = Column(Integer)
-    CurHP = Column(Integer)
-    Money = Column(Integer)
-    Attack = Column(Integer)
-    MagicAttack = Column(Integer)
-    XP = Column(Integer)
-    Armour = Column(Integer)
-    MagicArmour = Column(Integer)
-    LocationID = Column(Integer)
+class Mobs:
+    def __init__(self, data):
+        self.mob = data
+        self.mob_id = data["_id"]
+        self.mob_name = data["MobName"]
+        self.hp = data["HP"]
+        self.xp = data["XP"]
+        self.money = data["Money"]
+        self.req_level = data["ReqLevel"]
+        self.attack_type = data["AttackType"]
+        self.attack = data["Attack"]
+        self.armour = data["Armour"]
+        self.magic_armour = data["MagicArmour"]
 
+class Locations:
+    def __init__(self, data):
+        self.location = data
+        self.location_id = data["_id"]
+        self.location_name = data["LocationName"]
+        self.x_coord = data["XCoord"]
+        self.y_coord = data["YCoord"]
+        self.location_type = data["LocationType"]
 
-class Mobs(Base):
-    __tablename__ = 'Mobs'  # table name
-    MobID = Column(Integer, primary_key=True)
-    MobName = Column(String)
-    HP = Column(Integer)
-    XP = Column(Integer)
-    Money = Column(Integer)
-    ReqLevel = Column(Integer)
-    AttackType = Column(String)
-    Attack = Column(Integer)
-    Armour = Column(Integer)
-    MagicArmour = Column(Integer)
+class Items:
+    def __init__(self, data):
+        self.item = data
+        self.item_id = data["_id"]
+        self.name = data["Name"]
+        self.cost = data["Cost"]
+        self.cost_to_sale = data["CostToSale"]
+        self.item_type = data["ItemType"]
+        self.hp = data["HP"]
+        self.mana = data["Mana"]
+        self.attack = data["Attack"]
+        self.magic_attack = data["MagicAttack"]
+        self.armour = data["Armour"]
+        self.magic_armour = data["MagicArmour"]
+        self.req_level = data["ReqLevel"]
+        self.availability = data["Availability"]
 
-
-class Locations(Base):
-    __tablename__ = 'Locations'
-    LocationID = Column(Integer, primary_key=True)
-    LocationName = Column(String)
-    XCoord = Column(Integer)
-    YCoord = Column(Integer)
-    LocationType = Column(String)
-
-
-class Items(Base):
-    __tablename__ = 'Items'
-    ItemID = Column(Integer, primary_key=True)
-    Name = Column(String)
-    Cost = Column(Integer)
-    CostToSale = Column(Integer)
-    ItemType = Column(String)
-    HP = Column(Integer)
-    Mana = Column(Integer)
-    Attack = Column(Integer)
-    MagicAttack = Column(Integer)
-    Armour = Column(Integer)
-    MagicArmour = Column(Integer)
-    ReqLevel = Column(Integer)
-    Availability = Column(Integer)
-
-
-class Inventory(Base):
-    __tablename__ = 'Inventory'
-    UserID = Column(Integer, primary_key=True)
-    Nickname = Column(String)
-    ItemID = Column(Integer)
-    Quantity = Column(Integer)  # positive - there are several such things in the inventory, one of them is worn
-    # negative - several in inventory, not worn
+class Inventory:
+    def __init__(self, data):
+        self.inventory = data
+        self.user_id = data["_id"]
+        self.nickname = data["Nickname"]
+        self.item_id = data["ItemID"]
+        self.quantity = data["Quantity"]
