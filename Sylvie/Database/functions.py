@@ -2,10 +2,10 @@ import asyncio
 from Database.classes import *
 from Sylvie import *
 
-async def go_loc(username, loc_id, message):
-    user = await db.persons.find_one({"Nickname": username})
+async def go_loc(user_id, loc_id, message):
+    user = await db.persons.find_one({"user_id": user_id})
     user["LocationID"] = loc_id
-    await db.persons.replace_one({"_id": user["_id"]}, user)
+    await db.persons.replace_one({"user_id": user_id}, user)
     if loc_id > 0:
         cur_place = (await db.locations.find_one({"LocationID": loc_id}))["LocationType"]
         if cur_place == 'town':
@@ -15,16 +15,16 @@ async def go_loc(username, loc_id, message):
 
 
 async def get_town(message):
-    cur_town_id = (await db.persons.find_one({"Nickname": message.from_user.username}))["LocationID"]
+    cur_town_id = (await db.persons.find_one({"user_id": message.from_user.id}))["LocationID"]
     cur_town = (await db.locations.find_one({"LocationID": cur_town_id}))["LocationName"]
-    player = await db.persons.find_one({"Nickname": message.from_user.username})
+    player = await db.persons.find_one({"user_id": message.from_user.id})
     player["CurHP"] = player["HP"]
     await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
                                 text=f"You Are In The City: 🏰 *{cur_town}*", reply_markup=bot.town_markup, parse_mode="Markdown")
 
 
 async def get_dungeon(message):
-    cur_dungeon_id = (await db.persons.find_one({"Nickname": message.from_user.username}))["LocationID"]
+    cur_dungeon_id = (await db.persons.find_one({"user_id": message.from_user.id}))["LocationID"]
     cur_dungeon = (await db.locations.find_one({"LocationID": cur_dungeon_id}))["LocationName"]
     await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
                                 text=f"You Are In The Dungeon: ⛰️ *{cur_dungeon}*", reply_markup=bot.dungeon_gate_markup,
@@ -32,7 +32,7 @@ async def get_dungeon(message):
 
 
 async def get_map(message):
-    cur_town_id = (await db.persons.find_one({"Nickname": message.from_user.username}))["LocationID"]
+    cur_town_id = (await db.persons.find_one({"user_id": message.from_user.id}))["LocationID"]
     cur_town_x = (await db.locations.find_one({"LocationID": cur_town_id}))["XCoord"]
     cur_town_y = (await db.locations.find_one({"LocationID": cur_town_id}))["YCoord"]
     destinations = db.locations.find()
