@@ -83,7 +83,7 @@ class Items:
 class Inventory:
     def __init__(self, data):
         self.inventory = data
-        self.user_id = data["_id"]
-        self.nickname = data["Nickname"]
+        self.user_id = data["user_id"]
+        self.name = data["Name"]
         self.item_id = data["ItemID"]
         self.quantity = data["Quantity"]
