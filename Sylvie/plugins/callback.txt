@@ -76,7 +76,7 @@ async def handle(_, cq):
         enemy = Enemy(enemy_id)
         enemy_name = enemy.Name
         player = await db.persons.find_one({"user_id": cq.from_user.id})
-        await bot.edit_message_text(f"`{enemy_name}` {random.choice(['`Got In The Way!`', '`Jumped Out Of The Corner!`', '`Crept Unnoticed!`'])}",
+        await cq.edit_message_text(f"`{enemy_name}` {random.choice(['`Got In The Way!`', '`Jumped Out Of The Corner!`', '`Crept Unnoticed!`'])}",
                                     reply_markup=battle_markup)
         player["LocationID"] = -2
         await db.persons.replace_one({"user_id": cq.from_user.id}, player)
@@ -112,37 +112,34 @@ async def handle(_, cq):
             cur_fights.pop(player.Name)
         else:
             for i in range(0, 4):
-                await bot.edit_message_text(f"{crit}\n**The Enemy Has** `{enemy.hp}` **Health.**\n\n"
+                await cq.edit_message_text(f"{crit}\n**The Enemy Has** `{enemy.hp}` **Health.**\n\n"
                                                  f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode="Markdown")
                 await asyncio.sleep(0.6)
             if enemy.attack_type == 'phys':
                 enemy_damage = random.choices([enemy.attack, enemy.attack * 1.5], weights=[0.8, 0.2])[0]
                 player.CurHP -= max((enemy_damage - player.Armour), 0)
                 if player.CurHP <= 0:
-                    await bot.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Wounded`', '`Scratched`'])} **You On** `{max((enemy_damage - player.Armour), 0)}` **Damage.**\n\n"
+                    await cq.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Wounded`', '`Scratched`'])} **You On** `{max((enemy_damage - player.Armour), 0)}` **Damage.**\n\n"
                                                      f"**You Perished! :(**",
                                                 reply_markup=death_markup, parse_mode="Markdown")
                 else:
-                    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                                text=f"Opponent {numpy.random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player.Armour), 0)} Damage.\n\n"
-                                                     f"You Have Left {player.CurHP} Health.",
-                                                reply_markup=battle_markup, parse_mode="Markdown")
+                    await cq.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Wounded`', '`Scratched`'])} **You On** `{max((enemy_damage - player.Armour), 0)}` **Damage.**\n\n"
+                                                     f"**You Have Left** `{player.CurHP}` **Health.**",
+                                                reply_markup=battle_markup, parse_mode=enums.ParseMode.MARKDOWN)
                     state = State()
                     cur_fights[cq.from_user.id][3] = state
                     await wait(cq, state)
             elif enemy.attack_type == 'mag':
-                enemy_damage = numpy.random.choice([enemy.attack, enemy.attack * 1.5], p=[0.8, 0.2])
+                enemy_damage = random.choices([enemy.attack, enemy.attack * 1.5], weights=[0.8, 0.2])[0]
                 player.CurHP -= max((enemy_damage - player.MagicArmour), 0)
                 if player.CurHP <= 0:
-                    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                                text=f"Opponent {numpy.random.choice(['Hit', 'Hurt', 'Scratched'])} You On {max((enemy_damage - player.MagicArmour), 0)} Damage.\n\n"
-                                                     f"*You Perished ! :(*",
-                                                reply_markup=death_markup, parse_mode="Markdown")
+                    await cq.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Hurt`', '`Scratched`'])} **You On** `{max((enemy_damage - player.MagicArmour), 0)}` **Damage.**\n\n"
+                                                     f"**You Perished ! :(**",
+                                                reply_markup=death_markup, parse_mode=enums.ParseMode.MARKDOWN)
                 else:
-                    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                                text=f"Opponent {numpy.random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])} And Wounded You On {max((enemy_damage - player.MagicArmour), 0)} Damage.\n\n"
-                                                    f"You Have Left {player.CurHP} Health.",
-                                                reply_markup=battle_markup, parse_mode="Markdown")
+                    await cq.edit_message_text(f"**Opponent** {random.choice(['`Cast A Spell`', '`Fireball Launched`', '`Cast A Spell`'])} **And Wounded You On** `{max((enemy_damage - player.MagicArmour), 0)}` **Damage.**\n\n"
+                                                    f"**You Have Left** `{player.CurHP}` **Health.**",
+                                                reply_markup=battle_markup, parse_mode=enums.ParseMode.MARKDOWN)
                     state = State()
                     cur_fights[cq.from_user.id][3] = state
                     await wait(cq, state)
