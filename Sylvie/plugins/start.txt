@@ -1,0 +1,45 @@
+from pyrogram import *
+from pyrogram.types import *
+
+from Sylvie import *
+from Database import *
+
+# cities interface
+town_markup = types.InlineKeyboardMarkup()
+dungeons_list = types.InlineKeyboardButton("Leave The City", callback_data="leave_city")
+shop = types.InlineKeyboardButton("Local Store", callback_data="shop")
+stats = types.InlineKeyboardButton("Character Stats", callback_data="stats")
+inventory = types.InlineKeyboardButton("Inventory", callback_data='inventory')
+town_markup.add(dungeons_list)
+town_markup.add(inventory)
+town_markup.add(shop)
+town_markup.add(stats)
+
+@bot.on_messge(filters.command('start'))
+async def start(_, message):
+    nickname = await db.persons.find_one({"user_id": user_id})
+    if nickname is None:
+        session.add(
+            Persons(Nickname=message.from_user.username, Level=1, HP=10, CurHP=10, Money=50, Attack=1, MagicAttack=0,
+                    XP=0, Armour=0, MagicArmour=0, LocationID=1))
+        await bot.send_message(message.chat.id,
+                               f"You Have Successfully Registered. Welcome To The Game, {message.from_user.username}!")
+        cur_town_id = session.execute(
+            select(Persons.LocationID).where(Persons.Nickname == message.from_user.username)).scalar()
+        cur_town = (await db.locations.find_one({"LocationID": cur_loc_id}))["LocationName"]
+        await bot.send_message(message.chat.id, f"You Are In The City: 🏰 *{cur_town}*", reply_markup=town_markup,
+                               parse_mode=enums.ParseMode.MARKDOWN)
+    else:
+        cur_loc_id = (await db.persons.find_one({"user_id": message.from_user.id}))["LocationID"]
+        if cur_loc_id == -1:
+            pass
+        else:
+            cur_loc_type = (await db.locations.find_one({"LocationID": cur_loc_id}))["LocationType"]
+            if cur_loc_type == 'town':
+                cur_town = (await db.locations.find_one({"LocationID": cur_loc_id}))["LocationName"]
+                await bot.send_message(message.chat.id, f"`You Are In The City:` 🏰 **{cur_town}**", reply_markup=town_markup,
+                                       parse_mode=enums.ParseMode.MARKDOWN)
+            elif cur_loc_type == 'dungeon':
+                cur_dungeon = (await db.locations.find_one({"LocationID": cur_loc_id}))["LocationName"]
+                await bot.send_message(message.chat.id, f"`You Are In The Dungeon:` ⛰️ **{cur_dungeon}**", reply_markup=town_markup,
+                                       parse_mode=enums.ParseMode.MARKDOWN)
