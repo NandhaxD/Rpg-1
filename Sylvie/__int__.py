@@ -9,5 +9,6 @@ app = Client(
     bot_token=BOT_TOKEN
 )
 app.start()
+bot = app
 async_mongo_client = async_mongo(MONGO_URI)
 db = async_mongo_client.Sylvie
