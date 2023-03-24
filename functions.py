@@ -62,6 +62,7 @@ async def get_map(call):
     elif cur_town_id == 4:
         await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                     text=text, reply_markup=bot.choose_location_4_markup,
+                                    parse_mode="Markdown")
 
 def count_distance(x1, y1, x2, y2):
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** (1 / 2))
