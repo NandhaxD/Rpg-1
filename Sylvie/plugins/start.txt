@@ -24,10 +24,9 @@ async def start(_, message):
                     XP=0, Armour=0, MagicArmour=0, LocationID=1))
         await bot.send_message(message.chat.id,
                                f"You Have Successfully Registered. Welcome To The Game, {message.from_user.username}!")
-        cur_town_id = session.execute(
-            select(Persons.LocationID).where(Persons.Nickname == message.from_user.username)).scalar()
+        cur_town_id = (await db.persons.find_one({"user_id": message.from_user.id}))["LocationID"]
         cur_town = (await db.locations.find_one({"LocationID": cur_loc_id}))["LocationName"]
-        await bot.send_message(message.chat.id, f"You Are In The City: 🏰 *{cur_town}*", reply_markup=town_markup,
+        await bot.send_message(message.chat.id, f"`You Are In The City:` 🏰 **{cur_town}**", reply_markup=town_markup,
                                parse_mode=enums.ParseMode.MARKDOWN)
     else:
         cur_loc_id = (await db.persons.find_one({"user_id": message.from_user.id}))["LocationID"]
