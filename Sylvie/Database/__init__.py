@@ -1,4 +1,4 @@
-from classes import *
+from Database.classes import *
 
 # Items
 common_sword = Items(Name="Regular Sword", Cost=10, CostToSale=8, ItemType='weapon', HP=0, Mana=0, Attack=2,
