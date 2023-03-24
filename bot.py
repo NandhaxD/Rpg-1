@@ -180,8 +180,8 @@ async def handle(call):
         if not state.answered:
             state.answered = True
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                        text=f"Вы заснули на поле боя и стали лёгкой мишенью для врага.\n\n"
-                                             f"*Вы погибли! :(*", reply_markup=death_markup,
+                                        text=f"You Fell Asleep On The Battlefield And Became An Easy Target For The Enemy.\n\n"
+                                             f"*You Perished! :(*", reply_markup=death_markup,
                                         parse_mode="Markdown")
 
     cur_loc = session.execute(select(Persons.LocationID).where(Persons.Nickname == call.from_user.username)).scalar()
@@ -190,11 +190,11 @@ async def handle(call):
     if call.data == "shop":
         if cur_loc == 1:
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                        text=f"🛒 *Добро пожаловать в магазин!*", reply_markup=shop_markup_1,
+                                        text=f"🛒 *Welcome To Shop!*", reply_markup=shop_markup_1,
                                         parse_mode="Markdown")
         elif cur_loc == 2:
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                        text=f"🛒 *Добро пожаловать в магазин!*", reply_markup=shop_markup_2,
+                                        text=f"🛒 *Welcome To Shop!*", reply_markup=shop_markup_2,
                                         parse_mode="Markdown")
 
     elif call.data == "stats":
@@ -209,16 +209,16 @@ async def handle(call):
         xp = session.execute(select(Persons.XP).where(Persons.Nickname == name)).scalar()
         balance = session.execute(select(Persons.Money).where(Persons.Nickname == name)).scalar()
         await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=f"🧝 *Статистика Вашего персонажа:*\n\n"
-                                         f"*Имя:* {name}\n\n"
-                                         f"*Уровень:* {level} ({100 - xp} до сл.)\n\n"
-                                         f"*Здоровье:* {cur_hp}/{hp}\n\n"
-                                         f"*Урон:* {attack} ⚔️  {m_attack} 🪄\n\n"
-                                         f"*Броня:* {armour} 🛡️  {m_armour} 🔮\n\n"
-                                         f"*Баланс:* {balance} 💎", reply_markup=stats_markup,
+                                    text=f"🧝 *Your Character's Statistics:*\n\n"
+                                         f"*Name:* {name}\n\n"
+                                         f"*Level:* {level} ({100 - xp} To Sl.)\n\n"
+                                         f"*Health:* {cur_hp}/{hp}\n\n"
+                                         f"*Damage:* {attack} ⚔️  {m_attack} 🪄\n\n"
+                                         f"*Armor:* {armour} 🛡️  {m_armour} 🔮\n\n"
+                                         f"*Balance:* {balance} 💎", reply_markup=stats_markup,
                                     parse_mode="Markdown")
     elif call.data == "back_town":
-        if cur_loc >= 3:  # будет ломаться при наивном добавлении новых лок, надо внимательно
+        if cur_loc >= 3:  # will break when naively adding new locks, you need to carefully
             await get_dungeon(call)
         else:
             await get_town(call)
@@ -234,7 +234,7 @@ async def handle(call):
         ticks = floor(delay / 0.6)
         for i in range(1, ticks):
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                        text=f"В пути" + "." * (i % 4),
+                                        text=f"On My Way" + "." * (i % 4),
                                         parse_mode="Markdown")
 
             await asyncio.sleep(0.6)
@@ -249,7 +249,7 @@ async def handle(call):
         stmt = select(Persons).where(Persons.Nickname == call.from_user.username)
         player = session.scalars(stmt).one()
         await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=f"{enemy_name} {numpy.random.choice(['встал на пути!', 'выскочил из-за угла!', 'подкрался незаметно!'])}",
+                                    text=f"{enemy_name} {numpy.random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}",
                                     reply_markup=battle_markup)
         player.LocationID = -2
         session.commit()
@@ -262,9 +262,9 @@ async def handle(call):
         player = cur_fights[call.from_user.username][1]
         damage = numpy.random.choice([player.Attack, player.Attack * 1.5], p=[0.8, 0.2])
         enemy.hp -= max(damage - enemy.armour, 0)
-        crit = f"Атака на {damage} урона!"
+        crit = f"Attack On {damage} Damage!"
         if damage > player.Attack:
-            crit = f"*Критическая атака на {damage} урона!*"
+            crit = f"*Critical Attack On {damage} Damage!*"
         if enemy.hp <= 0:
             lup = ""
             new_xp = player.XP + enemy.xp
@@ -272,12 +272,12 @@ async def handle(call):
                 player.Level += 1
                 player.HP += 10
                 player.XP = new_xp - 100
-                lup = f"\n\n*Level up!* Теперь ваш уровень: {player.Level}"
+                lup = f"\n\n*Level up!* Now Your Level: {player.Level}"
             else:
                 player.XP = new_xp
             player.Money += enemy.money
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                        text=f"{crit}\n\nВы победили! Получено {enemy.xp} опыта и {enemy.money} монет."
+                                        text=f"{crit}\n\nYou Won! Received {enemy.xp} Experience And {enemy.money} Coins."
                                              f"{lup}",
                                         reply_markup=win_markup, parse_mode="Markdown")
             player.XP += enemy.xp
@@ -287,20 +287,20 @@ async def handle(call):
         else:
             for i in range(0, 4):
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"{crit}\nУ противника осталось {enemy.hp} здоровья.\n\n"
-                                                 f"Противник атакует" + "." * (i % 4), parse_mode="Markdown")
+                                            text=f"{crit}\nThe Enemy Has {enemy.hp} Health.\n\n"
+                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode="Markdown")
                 await asyncio.sleep(0.6)
             if enemy.attack_type == 'phys':
                 enemy_damage = numpy.random.choice([enemy.attack, enemy.attack * 1.5], p=[0.8, 0.2])
                 player.CurHP -= max((enemy_damage - player.Armour), 0)
                 if player.CurHP <= 0:
                     await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                                text=f"Противник {numpy.random.choice(['ударил', 'поранил', 'поцарапал'])} вас на {max((enemy_damage - player.Armour), 0)} урона.\n\n"
-                                                     f"*Вы погибли! :(*",
+                                                text=f"Opponent {numpy.random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player.Armour), 0)} Damage.\n\n"
+                                                     f"*You Perished! :(*",
                                                 reply_markup=death_markup, parse_mode="Markdown")
                 else:
                     await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                                text=f"Противник {numpy.random.choice(['ударил', 'поранил', 'поцарапал'])} вас на {max((enemy_damage - player.Armour), 0)} урона.\n\n"
+                                                text=f"Opponent {numpy.random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player.Armour), 0)} Damage.\n\n"
                                                      f"У вас осталось {player.CurHP} здоровья.",
                                                 reply_markup=battle_markup, parse_mode="Markdown")
                     state = State()
@@ -513,7 +513,7 @@ async def handle(call):
                                             reply_markup=death_markup, parse_mode="Markdown")
             else:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Противник {numpy.random.choice(['скастовал заклинание', 'запустил фаербол', 'наложил заклинание'])} и поранил вас на {max((enemy_damage - player.MagicArmour), 0)} урона.\n\n"
+                                            text=f"Opponent {numpy.random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])} And Wounded You On {max((enemy_damage - player.MagicArmour), 0)} Damage.\n\n"
                                                  f"У вас осталось {player.CurHP} здоровья.",
                                             reply_markup=battle_markup, parse_mode="Markdown")
                 state = State()
