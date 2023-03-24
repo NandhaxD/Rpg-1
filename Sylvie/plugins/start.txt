@@ -4,19 +4,14 @@ from pyrogram.types import *
 from Sylvie import *
 from Database import *
 
-# cities interface
-town_markup = types.InlineKeyboardMarkup()
-dungeons_list = types.InlineKeyboardButton("Leave The City", callback_data="leave_city")
-shop = types.InlineKeyboardButton("Local Store", callback_data="shop")
-stats = types.InlineKeyboardButton("Character Stats", callback_data="stats")
-inventory = types.InlineKeyboardButton("Inventory", callback_data='inventory')
-town_markup.add(dungeons_list)
-town_markup.add(inventory)
-town_markup.add(shop)
-town_markup.add(stats)
-
 @bot.on_messge(filters.command('start'))
 async def start(_, message):
+    town_markup = InlineKeyboardMarkup([
+        [InlineKeyboardButton("Leave The City", callback_data="leave_city")],
+        [InlineKeyboardButton("Inventory", callback_data="inventory")],
+        [InlineKeyboardButton("Local Store", callback_data="shop")],
+        [InlineKeyboardButton("Character Stats", callback_data="stats")]
+    ])
     nickname = await db.persons.find_one({"user_id": user_id})
     if nickname is None:
         answer await message.chat.ask('**Send Me Your Name:**', parse_mode=enums.ParseMode.MARKDOWN)
