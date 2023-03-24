@@ -66,11 +66,15 @@ async def handle(_, cq):
         await go_loc(cq.from_user.id, int(cq.data[3:]), cq)
     elif cq.data == 'enter_dungeon':
         if cur_loc == 3:
-            enemy_id = numpy.random.choice([1, 2], p=[0.8, 0.2])
+            options = [1, 2]
+            probabilities = [0.8, 0.2]
+            enemy_id = random.choices(options, probabilities)[0]
         elif cur_loc == 4:
-            enemy_id = numpy.random.choice([3, 4, 5], p=[0.6, 0.3, 0.1])
+            options = [3, 4, 5]
+            probabilities = [0.6, 0.3, 0.1]
+            enemy_id = random.choices(options, probabilities)[0]
         enemy = Enemy(enemy_id)
-        enemy_name = enemy.name
+        enemy_name = enemy.Name
         stmt = select(Persons).where(Persons.Nickname == cq.from_user.id)
         player = session.scalars(stmt).one()
         await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
