@@ -1,3 +1,4 @@
+import pyromod
 from pyrogram import *
 from motor.motor_asyncio import AsyncIOMotorClient as async_mongo
 from config import *
