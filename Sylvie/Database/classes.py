@@ -1,10 +1,6 @@
 import asyncio
-import motor.motor_asyncio
 from bson.objectid import ObjectId
-from config import MONGO_DB
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DB)
-db = client.Rpg
+from Sylvie import *
 
 class Enemy:
     def __init__(self, id):
