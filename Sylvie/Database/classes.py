@@ -27,8 +27,8 @@ class Timer:
 class Persons:
     def __init__(self, data):
         self.user = data
-        self.user_id = data["_id"]
-        self.nickname = data["Nickname"]
+        self.user_id = data["user_id"]
+        self.name = data["name"]
         self.level = data["Level"]
         self.hp = data["HP"]
         self.cur_hp = data["CurHP"]
