@@ -19,11 +19,13 @@ town_markup.add(stats)
 async def start(_, message):
     nickname = await db.persons.find_one({"user_id": user_id})
     if nickname is None:
-        session.add(
-            Persons(Nickname=message.from_user.username, Level=1, HP=10, CurHP=10, Money=50, Attack=1, MagicAttack=0,
-                    XP=0, Armour=0, MagicArmour=0, LocationID=1))
+        answer await message.chat.ask('**Send Me Your Name:**', parse_mode=enums.ParseMode.MARKDOWN)
+        new_one = Persons(user_id=message.from_user.id, Name=answer.text, Level=1, HP=10, CurHP=10, Money=50, Attack=1, MagicAttack=0,
+                    XP=0, Armour=0, MagicArmour=0, LocationID=1)
+        await db.persons.insert_one(new_one)
+        await answer.request.delete()
         await bot.send_message(message.chat.id,
-                               f"You Have Successfully Registered. Welcome To The Game, {message.from_user.username}!")
+                               f"**You Have Successfully Registered. Welcome To The Game, {message.from_user.mention}!**")
         cur_town_id = (await db.persons.find_one({"user_id": message.from_user.id}))["LocationID"]
         cur_town = (await db.locations.find_one({"LocationID": cur_loc_id}))["LocationName"]
         await bot.send_message(message.chat.id, f"`You Are In The City:` 🏰 **{cur_town}**", reply_markup=town_markup,
