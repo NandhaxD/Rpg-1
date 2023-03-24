@@ -9,46 +9,46 @@ from init_session import session
 from functions import count_distance, get_town, get_map, get_dungeon, go_loc
 from classes import Enemy, Inventory, Persons, Items, Mobs, Locations
 
-TOKEN = '5953711879:AAFVh4Chk58HE8ovsBXdT6zwq_yU5IozZ9s'
+TOKEN = '6202624871:AAES0GPYkc3mPND0qYbj21TqhcnhVxp0ldA'
 bot = AsyncTeleBot(TOKEN)
 
 db = sqlite3.connect('gametools.db')
 
 
-# интерфейс городов
+# cities interface
 town_markup = types.InlineKeyboardMarkup()
-dungeons_list = types.InlineKeyboardButton("Покинуть город", callback_data="leave_city")
-shop = types.InlineKeyboardButton("Местный магазин", callback_data="shop")
-stats = types.InlineKeyboardButton("Статистика персонажа", callback_data="stats")
-inventory = types.InlineKeyboardButton("Инвентарь", callback_data='inventory')
+dungeons_list = types.InlineKeyboardButton("Leave The City", callback_data="leave_city")
+shop = types.InlineKeyboardButton("Local Store", callback_data="shop")
+stats = types.InlineKeyboardButton("Character Stats", callback_data="stats")
+inventory = types.InlineKeyboardButton("Inventory", callback_data='inventory')
 town_markup.add(dungeons_list)
 town_markup.add(inventory)
 town_markup.add(shop)
 town_markup.add(stats)
 
-# интерфейс магазинов
+# shop interface
 shop_markup_1 = types.InlineKeyboardMarkup()
 shop_markup_2 = types.InlineKeyboardMarkup()
-back_shop_town = types.InlineKeyboardButton("Назад", callback_data='back_town')
+back_shop_town = types.InlineKeyboardButton("Back", callback_data='back_town')
 items_1 = session.execute(select(Items).where(Items.Availability == 1))
 items_2 = session.execute(select(Items).where(Items.Availability == 2))
 for item_1 in items_1:
-    t_item = types.InlineKeyboardButton(f"Купить {item_1.Items.Name}: {item_1.Items.Cost} 💎",
+    t_item = types.InlineKeyboardButton(f"Buy {item_1.Items.Name}: {item_1.Items.Cost} 💎",
                                         callback_data=f'buy_{item_1.Items.ItemID}')
     shop_markup_1.add(t_item)
 for item_2 in items_2:
-    t_item = types.InlineKeyboardButton(f"Купить {item_2.Items.Name}: {item_2.Items.Cost} 💎",
+    t_item = types.InlineKeyboardButton(f"Buy {item_2.Items.Name}: {item_2.Items.Cost} 💎",
                                         callback_data=f'buy_{item_2.Items.ItemID}')
     shop_markup_2.add(t_item)
 shop_markup_1.add(back_shop_town)
 shop_markup_2.add(back_shop_town)
 
-# интерфейс статистики
+# statistics interface
 stats_markup = types.InlineKeyboardMarkup()
-back_stats_town = types.InlineKeyboardButton("Назад", callback_data='back_town')
+back_stats_town = types.InlineKeyboardButton("Back", callback_data='back_town')
 stats_markup.add(back_stats_town)
 
-# интерфейс выбора локации
+# location selection interface
 choose_location_1_markup = types.InlineKeyboardMarkup()
 choose_location_2_markup = types.InlineKeyboardMarkup()
 choose_location_3_markup = types.InlineKeyboardMarkup()
@@ -62,21 +62,21 @@ y_3 = session.execute(select(Locations.YCoord).where(Locations.LocationID == 3))
 x_4 = session.execute(select(Locations.XCoord).where(Locations.LocationID == 4)).scalar()
 y_4 = session.execute(select(Locations.YCoord).where(Locations.LocationID == 4)).scalar()
 
-# интерфейс боя
+# interface paint
 battle_markup = types.InlineKeyboardMarkup()
-check = types.InlineKeyboardButton("Оценить", callback_data='check')
-attack = types.InlineKeyboardButton("Атаковать", callback_data='attack')
-heal = types.InlineKeyboardButton("Выпить зелье", callback_data='heal')
+check = types.InlineKeyboardButton("Estimate", callback_data='check')
+attack = types.InlineKeyboardButton("Attack", callback_data='attack')
+heal = types.InlineKeyboardButton("Drink The Potion", callback_data='heal')
 battle_markup.add(check)
 battle_markup.add(attack)
 battle_markup.add(heal)
 
-# интерфейс оценки
+# evaluation interface
 check_markup = types.InlineKeyboardMarkup()
 check_markup.add(attack)
 
-back_location_town = types.InlineKeyboardButton("Назад", callback_data='back_town')
-back_location_dungeon = types.InlineKeyboardButton("Назад", callback_data='back_dungeon')
+back_location_town = types.InlineKeyboardButton("Back", callback_data='back_town')
+back_location_dungeon = types.InlineKeyboardButton("Back", callback_data='back_dungeon')
 destinations = session.execute(select(Locations))
 for destination in destinations:
     el_x = session.execute(select(Locations.XCoord).where(Locations.LocationID == destination.Locations.LocationID)).scalar()
@@ -86,48 +86,48 @@ for destination in destinations:
     dist_3 = count_distance(x_3, y_3, el_x, el_y)
     dist_4 = count_distance(x_4, y_4, el_x, el_y)
     if 0 < dist_1 <= 10:
-        choose_location_1_markup.add(types.InlineKeyboardButton(f"Отправиться: {destination.Locations.LocationName}",
+        choose_location_1_markup.add(types.InlineKeyboardButton(f"Go: {destination.Locations.LocationName}",
                                                                 callback_data=f'go_{destination.Locations.LocationID}'))
     if 0 < dist_2 <= 10:
-        choose_location_2_markup.add(types.InlineKeyboardButton(f"Отправиться: {destination.Locations.LocationName}",
+        choose_location_2_markup.add(types.InlineKeyboardButton(f"Go: {destination.Locations.LocationName}",
                                                                 callback_data=f'go_{destination.Locations.LocationID}'))
     if 0 < dist_3 <= 10:
-        choose_location_3_markup.add(types.InlineKeyboardButton(f"Отправиться: {destination.Locations.LocationName}",
+        choose_location_3_markup.add(types.InlineKeyboardButton(f"Go: {destination.Locations.LocationName}",
                                                                 callback_data=f'go_{destination.Locations.LocationID}'))
     if 0 < dist_4 <= 10:
-        choose_location_4_markup.add(types.InlineKeyboardButton(f"Отправиться: {destination.Locations.LocationName}",
+        choose_location_4_markup.add(types.InlineKeyboardButton(f"Go: {destination.Locations.LocationName}",
                                                                 callback_data=f'go_{destination.Locations.LocationID}'))
 choose_location_1_markup.add(back_location_town)
 choose_location_2_markup.add(back_location_town)
 choose_location_3_markup.add(back_location_dungeon)
 choose_location_4_markup.add(back_location_dungeon)
 
-# интерфейс входа в данж
+# dungeon login interface
 dungeon_gate_markup = types.InlineKeyboardMarkup()
-back_to_map = types.InlineKeyboardButton(f"Назад", callback_data='leave_city')
-enter_dungeon = types.InlineKeyboardButton(f"Зайти в данж!", callback_data='enter_dungeon')
+back_to_map = types.InlineKeyboardButton(f"Back", callback_data='leave_city')
+enter_dungeon = types.InlineKeyboardButton(f"Go To The Dungeon!", callback_data='enter_dungeon')
 dungeon_gate_markup.add(enter_dungeon)
 dungeon_gate_markup.add(stats)
 dungeon_gate_markup.add(back_to_map)
 
-# интерфейс победы
+# victory interface
 win_markup = types.InlineKeyboardMarkup()
-go_further = types.InlineKeyboardButton(f"Продолжать путь", callback_data='enter_dungeon')
+go_further = types.InlineKeyboardButton(f"Keep Going", callback_data='enter_dungeon')
 win_markup.add(back_to_map)
 win_markup.add(go_further)
 
-# интерфейс смерти
+# death interface
 death_markup = types.InlineKeyboardMarkup()
-revive = types.InlineKeyboardButton(f"Возродиться", callback_data='revive')
+revive = types.InlineKeyboardButton(f"Be Reborn", callback_data='revive')
 death_markup.add(revive)
 
-# интерфейс в ситуации, когда нет денег
+# interface in a situation where there is no money
 no_money_markup = types.InlineKeyboardMarkup()
 no_money_markup.add(back_location_town)
 
-# интерфейс после покупки
+# interface after purchase
 after_deal_markup = types.InlineKeyboardMarkup()
-back_to_inv = types.InlineKeyboardButton(f"Назад", callback_data='inventory')
+back_to_inv = types.InlineKeyboardButton(f"Back", callback_data='inventory')
 after_deal_markup.add(back_to_inv)
 
 cur_fights = dict()
@@ -142,11 +142,11 @@ async def register(message):
                     XP=0, Armour=0, MagicArmour=0, LocationID=1))
         session.commit()
         await bot.send_message(message.chat.id,
-                               f"Ты успешно зарегистрировался. Добро пожаловать в игру, {message.from_user.username}!")
+                               f"You Have Successfully Registered. Welcome To The Game, {message.from_user.username}!")
         cur_town_id = session.execute(
             select(Persons.LocationID).where(Persons.Nickname == message.from_user.username)).scalar()
         cur_town = session.execute(select(Locations.LocationName).where(Locations.LocationID == cur_town_id)).scalar()
-        await bot.send_message(message.chat.id, f"Ты в городе: 🏰 *{cur_town}*", reply_markup=town_markup,
+        await bot.send_message(message.chat.id, f"You Are In The City: 🏰 *{cur_town}*", reply_markup=town_markup,
                                parse_mode="Markdown")
     else:
         cur_loc_id = session.execute(
@@ -159,12 +159,12 @@ async def register(message):
             if cur_loc_type == 'town':
                 cur_town = session.execute(
                     select(Locations.LocationName).where(Locations.LocationID == cur_loc_id)).scalar()
-                await bot.send_message(message.chat.id, f"Ты в городе: 🏰 *{cur_town}*", reply_markup=town_markup,
+                await bot.send_message(message.chat.id, f"You Are In The City: 🏰 *{cur_town}*", reply_markup=town_markup,
                                        parse_mode="Markdown")
             elif cur_loc_type == 'dungeon':
                 cur_dungeon = session.execute(
                     select(Locations.LocationName).where(Locations.LocationID == cur_loc_id)).scalar()
-                await bot.send_message(message.chat.id, f"Ты в данже: ⛰️ *{cur_dungeon}*", reply_markup=town_markup,
+                await bot.send_message(message.chat.id, f"You Are In The Dungeon: ⛰️ *{cur_dungeon}*", reply_markup=town_markup,
                                        parse_mode="Markdown")
 
 class State:
