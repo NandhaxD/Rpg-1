@@ -380,11 +380,11 @@ async def handle(call):
                                             reply_markup=shop_markup_1, parse_mode="Markdown")
             elif player.LocationID == 2:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"You Bought An Item {item.Name}. You now have them in your inventory {abs(amt) + 1}.",
+                                            text=f"You Bought An Item {item.Name}. You Now Have Them In Your Inventory {abs(amt) + 1}.",
                                             reply_markup=shop_markup_2, parse_mode="Markdown")
         session.commit()
     elif call.data == 'inventory':
-        # интерфейс инвентаря
+        # inventory interface
         inventory_markup = types.InlineKeyboardMarkup()
         stmt = select(Inventory).where(Inventory.Nickname == call.from_user.username)
         cur_inv = session.scalars(stmt)
@@ -396,16 +396,16 @@ async def handle(call):
             if quantity != 0:
                 if quantity < 0 and item_type != 'potion':
                     inventory_markup.add(types.InlineKeyboardButton(
-                        f"Надеть {name}",
+                        f"Put On {name}",
                         callback_data=f'wear_{item.ItemID}'))
-                text += f'{name} - {abs(quantity)} шт. {"✅" if quantity > 0 else ""}\n'
+                text += f'{name} - {abs(quantity)} PC. {"✅" if quantity > 0 else ""}\n'
                 inventory_markup.add(types.InlineKeyboardButton(
-                    f"Продать {name} ({session.execute(select(Items.CostToSale).where(Items.ItemID == item.ItemID)).scalar()} 💎)",
+                    f"Sell {name} ({session.execute(select(Items.CostToSale).where(Items.ItemID == item.ItemID)).scalar()} 💎)",
                     callback_data=f'sell_{item.ItemID}'))
         inventory_markup.add(back_stats_town)
         await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=f"*Ваш инвентарь:*\n\n"
-                                         f"{'Пусто!' if text == '' else text}",
+                                    text=f"*Your Inventory:*\n\n"
+                                         f"{'Empty!' if text == '' else text}",
                                     reply_markup=inventory_markup, parse_mode="Markdown")
     elif call.data[0:3] == 'sel':
         item_to_sell = int(call.data[5:])
@@ -421,7 +421,7 @@ async def handle(call):
         user.Money += session.execute(select(Items.CostToSale).where(Items.ItemID == item_to_sell)).scalar()
         session.commit()
         await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=f"Вы продали {session.execute(select(Items.Name).where(Items.ItemID == item_to_sell)).scalar()}",
+                                    text=f"You Sold {session.execute(select(Items.Name).where(Items.ItemID == item_to_sell)).scalar()}",
                                     reply_markup=after_deal_markup, parse_mode="Markdown")
     elif call.data[0:3] == 'wea':
         item_to_wear = int(call.data[5:])
@@ -430,7 +430,7 @@ async def handle(call):
         print(item_type)
         if item_to_wear_inst.ReqLevel > session.execute(select(Persons.Level).where(Persons.Nickname == call.from_user.username)).scalar():
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                        text=f"Вы слишком маленького уровня, чтобы носить этот предмет.",
+                                        text=f"You Are Too Small, To Wear This Item.",
                                         reply_markup=after_deal_markup, parse_mode="Markdown")
         else:
             player_inv = session.execute(select(Inventory).where(Inventory.Nickname == call.from_user.username))
@@ -461,7 +461,7 @@ async def handle(call):
             user.MagicArmour += item_to_wear_inst.MagicArmour
             session.commit()
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=f"Вы надели {session.execute(select(Items.Name).where(Items.ItemID == item_to_wear)).scalar()}",
+                                    text=f"You Put On {session.execute(select(Items.Name).where(Items.ItemID == item_to_wear)).scalar()}",
                                     reply_markup=after_deal_markup, parse_mode="Markdown")
     elif call.data == 'heal':
         cur_fights[call.from_user.username][3].answered = True
@@ -478,27 +478,27 @@ async def handle(call):
             session.commit()
             for i in range(0, 4):
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Вы выпили зелье здоровья! Восстановлено 5 хп. Текущее здоровье: {session.scalars(stmt1).one().CurHP}\n\n"
-                                                 f"Противник атакует" + "." * (i % 4), parse_mode="Markdown")
+                                            text=f"You Drank A Health Potion! Restored 5 Hp. Current Health: {session.scalars(stmt1).one().CurHP}\n\n"
+                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode="Markdown")
                 await asyncio.sleep(0.6)
         else:
             for i in range(0, 4):
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Вы полезли в рюкзак за зельем, но его там не оказалось!\n\n"
-                                                 f"Противник атакует" + "." * (i % 4), parse_mode="Markdown")
+                                            text=f"You Reached Into Your Backpack For A Potion, But He Wasn't There!\n\n"
+                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode="Markdown")
                 await asyncio.sleep(0.6)
         if enemy.attack_type == 'phys':
             enemy_damage = numpy.random.choice([enemy.attack, enemy.attack * 1.5], p=[0.8, 0.2])
             player.CurHP -= max((enemy_damage - player.Armour), 0)
             if player.CurHP <= 0:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Противник {numpy.random.choice(['ударил', 'поранил', 'поцарапал'])} вас на {max((enemy_damage - player.Armour), 0)} урона.\n\n"
-                                                 f"*Вы погибли! :(*",
+                                            text=f"Opponent {numpy.random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player.Armour), 0)} Damage.\n\n"
+                                                 f"*You Perished! :(*",
                                             reply_markup=death_markup, parse_mode="Markdown")
             else:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Противник {numpy.random.choice(['ударил', 'поранил', 'поцарапал'])} вас на {max((enemy_damage - player.Armour), 0)} урона.\n\n"
-                                                 f"У вас осталось {player.CurHP} здоровья.",
+                                            text=f"Opponent {numpy.random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player.Armour), 0)} Damage.\n\n"
+                                                 f"You Have Left {player.CurHP} Health.",
                                             reply_markup=battle_markup, parse_mode="Markdown")
                 state = State()
                 cur_fights[call.from_user.username][3] = state
@@ -508,13 +508,13 @@ async def handle(call):
             player.CurHP -= max((enemy_damage - player.MagicArmour), 0)
             if player.CurHP <= 0:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Противник {numpy.random.choice(['ударил', 'поранил', 'поцарапал'])} вас на {max((enemy_damage - player.MagicArmour), 0)} урона.\n\n"
-                                                 f"*Вы погибли ! :(*",
+                                            text=f"Opponent {numpy.random.choice(['Hit', 'Hurt', 'Scratched'])} You On {max((enemy_damage - player.MagicArmour), 0)} Damage.\n\n"
+                                                 f"*You Perished ! :(*",
                                             reply_markup=death_markup, parse_mode="Markdown")
             else:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                             text=f"Opponent {numpy.random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])} And Wounded You On {max((enemy_damage - player.MagicArmour), 0)} Damage.\n\n"
-                                                 f"У вас осталось {player.CurHP} здоровья.",
+                                                 f"You Have Left {player.CurHP} Health.",
                                             reply_markup=battle_markup, parse_mode="Markdown")
                 state = State()
                 cur_fights[call.from_user.username][3] = state
