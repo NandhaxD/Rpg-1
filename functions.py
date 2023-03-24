@@ -25,14 +25,14 @@ async def get_town(message):
     cur_town = (await db.locations.find_one({"LocationID": cur_town_id}))["LocationName"]
     player = await db.persons.find_one({"Nickname": message.from_user.username})
     player["CurHP"] = player["HP"]
-    await bot.bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
+    await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
                                 text=f"You Are In The City: 🏰 *{cur_town}*", reply_markup=bot.town_markup, parse_mode="Markdown")
 
 
 async def get_dungeon(message):
     cur_dungeon_id = (await db.persons.find_one({"Nickname": message.from_user.username}))["LocationID"]
     cur_dungeon = (await db.locations.find_one({"LocationID": cur_dungeon_id}))["LocationName"]
-    await bot.bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
+    await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
                                 text=f"You Are In The Dungeon: ⛰️ *{cur_dungeon}*", reply_markup=bot.dungeon_gate_markup,
                                 parse_mode="Markdown")
 
@@ -48,19 +48,19 @@ async def get_map(message):
         if 0 < dist <= 10:
             text += f"{el['LocationName']} - {dist} Km 🛣️\n\n"
     if cur_town_id == 1:
-        await bot.bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
+        await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
                                     text=text, reply_markup=bot.choose_location_1_markup,
                                     parse_mode="Markdown")
     elif cur_town_id == 2:
-        await bot.bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
+        await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
                                     text=text, reply_markup=bot.choose_location_2_markup,
                                     parse_mode="Markdown")
     elif cur_town_id == 3:
-        await bot.bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
+        await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
                                     text=text, reply_markup=bot.choose_location_3_markup,
                                     parse_mode="Markdown")
     elif cur_town_id == 4:
-        await bot.bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
+        await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
                                     text=text, reply_markup=bot.choose_location_4_markup,
                                     parse_mode="Markdown")
 
