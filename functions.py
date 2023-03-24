@@ -25,7 +25,7 @@ async def get_town(call):
     player = session.scalars(stmt).one()
     player.CurHP = player.HP
     await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                text=f"Ты в городе: 🏰 *{cur_town}*", reply_markup=bot.town_markup, parse_mode="Markdown")
+                                text=f"You Are In The City: 🏰 *{cur_town}*", reply_markup=bot.town_markup, parse_mode="Markdown")
 
 
 async def get_dungeon(call):
@@ -33,7 +33,7 @@ async def get_dungeon(call):
         select(Persons.LocationID).where(Persons.Nickname == call.from_user.username)).scalar()
     cur_dungeon = session.execute(select(Locations.LocationName).where(Locations.LocationID == cur_dungeon_id)).scalar()
     await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                text=f"Ты в данже: ⛰️ *{cur_dungeon}*", reply_markup=bot.dungeon_gate_markup,
+                                text=f"You Are In The Dungeon: ⛰️ *{cur_dungeon}*", reply_markup=bot.dungeon_gate_markup,
                                 parse_mode="Markdown")
 
 
@@ -43,11 +43,11 @@ async def get_map(call):
     cur_town_x = session.execute(select(Locations.XCoord).where(Locations.LocationID == cur_town_id)).scalar()
     cur_town_y = session.execute(select(Locations.YCoord).where(Locations.LocationID == cur_town_id)).scalar()
     destinations = session.execute(select(Locations))
-    text = '*Доступные локации:*\n\n'
+    text = '*Available Locations:*\n\n'
     for el in destinations:
         dist = round(count_distance(cur_town_x, cur_town_y, el.Locations.XCoord, el.Locations.YCoord))
         if 0 < dist <= 10:
-            text += f"{el.Locations.LocationName} - {dist} км 🛣️\n\n"
+            text += f"{el.Locations.LocationName} - {dist} Km 🛣️\n\n"
     if cur_town_id == 1:
         await bot.bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                     text=text, reply_markup=bot.choose_location_1_markup,
