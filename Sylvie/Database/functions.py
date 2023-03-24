@@ -1,12 +1,6 @@
 import asyncio
-import motor.motor_asyncio
-import bot
-from classes import Persons, Locations
-from config import MONGO_DB
-
-client = motor.motor_asyncio.AsyncIOMotorClient(MONGO_DB)
-db = client.Rpg
-
+from Database.classes import *
+from Sylvie import *
 
 async def go_loc(username, loc_id, message):
     user = await db.persons.find_one({"Nickname": username})
