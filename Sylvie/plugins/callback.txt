@@ -35,13 +35,13 @@ async def handle(_, cq):
         m_armour = uwu["MagicArmour"]
         xp = uwu["XP"]
         balance = uwu["Money"]
-        await cq.edit_message_text(f"🧝 *Your Character's Statistics:*\n\n"
-                                         f"*Name:* {name}\n\n"
-                                         f"*Level:* {level} ({100 - xp} To Sl.)\n\n"
-                                         f"*Health:* {cur_hp}/{hp}\n\n"
-                                         f"*Damage:* {attack} ⚔️  {m_attack} 🪄\n\n"
-                                         f"*Armor:* {armour} 🛡️  {m_armour} 🔮\n\n"
-                                         f"*Balance:* {balance} 💎", reply_markup=stats_markup,
+        await cq.edit_message_text(f"🧝 **Your Character's Statistics:**\n\n"
+                                         f"**Name:** `{name}`\n\n"
+                                         f"**Level:*" `{level}` (`{100 - xp}` **To Sl.**)\n\n"
+                                         f"**Health:** `{cur_hp}`/`{hp}`\n\n"
+                                         f"**Damage:** `{attack}` ⚔️  `{m_attack}` 🪄\n\n"
+                                         f"**Armor:** `{armour}` 🛡️  `{m_armour}` 🔮\n\n"
+                                         f"**Balance:** `{balance}` 💎", reply_markup=stats_markup,
                                     parse_mode=enums.ParseMode.MARKDOWN")
     elif cq.data == "back_town":
         if cur_loc >= 3:  # will break when naively adding new locks, you need to carefully
@@ -59,7 +59,7 @@ async def handle(_, cq):
         await go_loc(cq.from_user.id, -1, cq)
         ticks = floor(delay / 0.6)
         for i in range(1, ticks):
-            await cq.edit_message_text(f"On My Way" + "." * (i % 4),
+            await cq.edit_message_text(f"**On My Way**" + "." * (i % 4),
                                         parse_mode=enums.ParseMode.Markdown)
 
             await asyncio.sleep(0.6)
@@ -76,7 +76,7 @@ async def handle(_, cq):
         enemy = Enemy(enemy_id)
         enemy_name = enemy.Name
         player = await db.persons.find_one({"user_id": cq.from_user.id})
-        await bot.edit_message_text(f"{enemy_name} {random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}",
+        await bot.edit_message_text(f"`{enemy_name}` {random.choice(['`Got In The Way!`', '`Jumped Out Of The Corner!`', '`Crept Unnoticed!`'])}",
                                     reply_markup=battle_markup)
         player["LocationID"] = -2
         await db.persons.replace_one({"user_id": cq.from_user.id}, player)
@@ -87,11 +87,11 @@ async def handle(_, cq):
         cur_fights[cq.from_user.id][3].answered = True
         enemy = cur_fights[cq.from_user.id][0]
         player = cur_fights[cq.from_user.id][1]
-        damage = numpy.random.choice([player.Attack, player.Attack * 1.5], p=[0.8, 0.2])
+        damage = player.Attack * 1.5 if random.random() < 0.2 else player.Attack
         enemy.hp -= max(damage - enemy.armour, 0)
-        crit = f"Attack On {damage} Damage!"
+        crit = f"**Attack On** `{damage}` **Damage!**"
         if damage > player.Attack:
-            crit = f"*Critical Attack On {damage} Damage!*"
+            crit = f"**Critical Attack On** `{damage}` **Damage!**"
         if enemy.hp <= 0:
             lup = ""
             new_xp = player.XP + enemy.xp
@@ -99,31 +99,28 @@ async def handle(_, cq):
                 player.Level += 1
                 player.HP += 10
                 player.XP = new_xp - 100
-                lup = f"\n\n*Level up!* Now Your Level: {player.Level}"
+                lup = f"\n\n**Level Up! Now Your Level:** `{player.Level}`"
             else:
                 player.XP = new_xp
             player.Money += enemy.money
-            await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                        text=f"{crit}\n\nYou Won! Received {enemy.xp} Experience And {enemy.money} Coins."
+            await cq.edit_message_text(f"{crit}\n\n**You Won! Received** `{enemy.xp}` **Experience And** `{enemy.money}` **Coins.**"
                                              f"{lup}",
-                                        reply_markup=win_markup, parse_mode="Markdown")
+                                        reply_markup=win_markup, parse_mode=enums.ParseMode.MARKDOWN)
             player.XP += enemy.xp
             player.Money += enemy.money
-            player.LocationID = cur_fights[player.Nickname][2]
-            cur_fights.pop(player.Nickname)
+            player.LocationID = cur_fights[player.Name][2]
+            cur_fights.pop(player.Name)
         else:
             for i in range(0, 4):
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"{crit}\nThe Enemy Has {enemy.hp} Health.\n\n"
-                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode="Markdown")
+                await bot.edit_message_text(f"{crit}\n**The Enemy Has** `{enemy.hp}` **Health.**\n\n"
+                                                 f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode="Markdown")
                 await asyncio.sleep(0.6)
             if enemy.attack_type == 'phys':
-                enemy_damage = numpy.random.choice([enemy.attack, enemy.attack * 1.5], p=[0.8, 0.2])
+                enemy_damage = random.choices([enemy.attack, enemy.attack * 1.5], weights=[0.8, 0.2])[0]
                 player.CurHP -= max((enemy_damage - player.Armour), 0)
                 if player.CurHP <= 0:
-                    await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                                text=f"Opponent {numpy.random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player.Armour), 0)} Damage.\n\n"
-                                                     f"*You Perished! :(*",
+                    await bot.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Wounded`', '`Scratched`'])} **You On** `{max((enemy_damage - player.Armour), 0)}` **Damage.**\n\n"
+                                                     f"**You Perished! :(**",
                                                 reply_markup=death_markup, parse_mode="Markdown")
                 else:
                     await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
