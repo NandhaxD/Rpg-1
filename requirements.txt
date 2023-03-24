@@ -1,5 +1,6 @@
 numpy
-pyTelegramBotAPI
-SQLAlchemy
-aiohttp
+motor
+pymongo
+pyrogram
+tgcrypto
 sqlite
