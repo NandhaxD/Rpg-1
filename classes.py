@@ -2,11 +2,9 @@ import asyncio
 import motor.motor_asyncio
 from bson.objectid import ObjectId
 
-# Set up the Motor client
 client = motor.motor_asyncio.AsyncIOMotorClient('mongodb://localhost:27017')
-db = client['my_database']
+db = client.Rpg
 
-# Define the classes
 class Enemy:
     def __init__(self, id):
         self.enemy = await db.mobs.find_one({"_id": ObjectId(id)})
