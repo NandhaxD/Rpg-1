@@ -290,7 +290,7 @@ async def handle(_, cq):
             await db.persons.replace_one({"user_id": cq.from_user.id}, stmt1)
             await db.inventory.replace_one({"user_id": cq.from_user.id, 'item_id': heal_potion}, stmt)
             for i in range(0, 4):
-                await cq.edit_message_text(f"**You Drank A Health Potion! Restored 5 Hp. Current Health:** {session.scalars(stmt1).one().CurHP}\n\n"
+                await cq.edit_message_text(f"**You Drank A Health Potion! Restored 5 Hp. Current Health:** {stmt1["CurHP"]}\n\n"
                                                  f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
                 await asyncio.sleep(0.6)
         else:
