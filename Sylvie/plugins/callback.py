@@ -204,19 +204,19 @@ async def handle(_, cq):
         cur_inv = await db.inventory.find_one({'user_id': cq.from_user.id})
         text = ''
         for item in cur_inv:
-            name = session.execute(select(Items.Name).where(Items.ItemID == item.ItemID)).scalar()
-            quantity = session.execute(select(Inventory.Quantity).where(Inventory.ItemID == item.ItemID)).scalar()
-            item_type = session.execute(select(Items.ItemType).where(Items.ItemID == item.ItemID)).scalar()
+            item_doc = await db.items.find_one({'ItemID': item['ItemID']})
+            name = item_doc['Name']
+            quantity = item['Quantity']
+            item_type = item_doc['ItemType']
             if quantity != 0:
                 if quantity < 0 and item_type != 'potion':
-                    inventory_markup.add(types.InlineKeyboardButton(
+                    inventory_markup.append(InlineKeyboardButton(
                         f"Put On {name}",
-                        callback_data=f'wear_{item.ItemID}'))
+                        callback_data=f'wear_{item["ItemID"]}'))
                 text += f'{name} - {abs(quantity)} PC. {"✅" if quantity > 0 else ""}\n'
-                inventory_markup.add(types.InlineKeyboardButton(
-                    f"Sell {name} ({session.execute(select(Items.CostToSale).where(Items.ItemID == item.ItemID)).scalar()} 💎)",
-                    callback_data=f'sell_{item.ItemID}'))
-        inventory_markup.add(back_stats_town)
+                inventory_markup.append(InlineKeyboardButton(
+                    f"Sell {name} ({item_doc['CostToSale']} 💎)",
+                    callback_data=f'sell_{item["ItemID"]}'))
         await cq.edit_message_text(f"**Your Inventory:**\n\n"
                                          f"{'`Empty`!' if text == '' else `text`}",
                                     reply_markup=inventory_markup, parse_mode=enums.ParseMode.Markdown)
