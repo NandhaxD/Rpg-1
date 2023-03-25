@@ -74,45 +74,45 @@ async def handle(_, cq):
             probabilities = [0.6, 0.3, 0.1]
             enemy_id = random.choices(options, probabilities)[0]
         enemy = Enemy(enemy_id)
-        enemy_name = enemy.Name
+        enemy_name = enemy["Name"]
         player = await db.persons.find_one({"user_id": cq.from_user.id})
         await cq.edit_message_text(f"`{enemy_name}` {random.choice(['`Got In The Way!`', '`Jumped Out Of The Corner!`', '`Crept Unnoticed!`'])}",
                                     reply_markup=battle_markup)
         player["LocationID"] = -2
         await db.persons.replace_one({"user_id": cq.from_user.id}, player)
         state = State()
-        cur_fights[player.Name] = [enemy, player, cur_loc, state]
+        cur_fights[player["Name"]] = [enemy, player, cur_loc, state]
         await wait(cq, state)
     elif cq.data == 'attack':
         cur_fights[cq.from_user.id][3].answered = True
         enemy = cur_fights[cq.from_user.id][0]
         player = cur_fights[cq.from_user.id][1]
-        damage = player.Attack * 1.5 if random.random() < 0.2 else player.Attack
-        enemy.hp -= max(damage - enemy.armour, 0)
+        damage = player["Attack"] * 1.5 if random.random() < 0.2 else player["Attack"]
+        enemy["HP"] -= max(damage - enemy["Armour"], 0)
         crit = f"**Attack On** `{damage}` **Damage!**"
-        if damage > player.Attack:
+        if damage > player["Attack"]:
             crit = f"**Critical Attack On** `{damage}` **Damage!**"
         if enemy.hp <= 0:
             lup = ""
-            new_xp = player.XP + enemy.xp
+            new_xp = player["XP"] + enemy["XP"]
             if new_xp >= 100:
-                player.Level += 1
-                player.HP += 10
-                player.XP = new_xp - 100
-                lup = f"\n\n**Level Up! Now Your Level:** `{player.Level}`"
+                player["Level"] += 1
+                player["HP"] += 10
+                player["XP"] = new_xp - 100
+                lup = f"\n\n**Level Up! Now Your Level:** `{player["Level"]}`"
             else:
-                player.XP = new_xp
-            player.Money += enemy.money
-            await cq.edit_message_text(f"{crit}\n\n**You Won! Received** `{enemy.xp}` **Experience And** `{enemy.money}` **Coins.**"
+                player["XP"] = new_xp
+            player["Money"] += enemy["Money"]
+            await cq.edit_message_text(f"{crit}\n\n**You Won! Received** `{enemy["XP"]}` **Experience And** `{enemy["Money"]}` **Coins.**"
                                              f"{lup}",
                                         reply_markup=win_markup, parse_mode=enums.ParseMode.MARKDOWN)
-            player.XP += enemy.xp
-            player.Money += enemy.money
-            player.LocationID = cur_fights[player.Name][2]
-            cur_fights.pop(player.Name)
+            player["XP"] += enemy["XP"]
+            player["Money"] += enemy["Money"]
+            player["LocationID"] = cur_fights[player["Name"]][2]
+            cur_fights.pop(player["Name"])
         else:
             for i in range(0, 4):
-                await cq.edit_message_text(f"{crit}\n**The Enemy Has** `{enemy.hp}` **Health.**\n\n"
+                await cq.edit_message_text(f"{crit}\n**The Enemy Has** `{enemy["HP"]}` **Health.**\n\n"
                                                  f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode="Markdown")
                 await asyncio.sleep(0.6)
             if enemy.attack_type == 'phys':
