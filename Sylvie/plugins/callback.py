@@ -168,22 +168,17 @@ async def handle(_, cq):
         player["CurHP"] = player["HP"]
         await get_town(cq)
     elif cq.data[0:3] == 'buy':
-        stmt1 = select(Persons).where(Persons.Name == cq.from_user.id)
-        player = session.scalars(stmt1).one()
-        stmt3 = select(Items).where(Items.ItemID == int(cq.data[4:]))
-        item = session.scalars(stmt3).one()
-        if player["Money"] < item.Cost:
+        player = await db.persons.find_one({"user_id": cq.from_user.id})
+        item = await db.items.find_one({"_id": int(cq.data[4:])})
+        if player["Money"] < item["Cost"]:
             if player["LocationID"] == 1:
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text="Not Enough Coins.", reply_markup=no_money_markup,
+                await cq.edit_message_text("`Not Enough Coins.`", reply_markup=no_money_markup,
                                             parse_mode=enums.ParseMode.Markdown)
             elif player["LocationID"] == 2:
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text="Not Enough Coins.", reply_markup=no_money_markup,
+                await cq.edit_message_text("`Not Enough Coins.`", reply_markup=no_money_markup,
                                             parse_mode=enums.ParseMode.Markdown)
         else:
-            player["Money"] -= item.Cost
-            session.commit()
+            player["Money"] -= item["Cost"]
             item_in_inv = session.execute(select(Inventory).where(Inventory.Name == cq.from_user.username).where(
                 Inventory.ItemID == item.ItemID))
             if item_in_inv.scalar() is None:
