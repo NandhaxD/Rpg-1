@@ -2,8 +2,8 @@ import logging
 import importlib
 from pyrogram import idle
 
-from Slave import *
-from Slave.plugins import *
+from Sylvie import *
+from Sylvie.plugins import *
 
 FORMAT = "%(message)s"
 
@@ -15,6 +15,6 @@ if __name__ == "__main__":
         datefmt="[%X]",
     )
     for module in ALL_MODULES:
-      importlib.import_module("Slave.plugins." + module)
-    logging.getLogger("pyrogram").setLevel(logging.INFO)    
+      importlib.import_module("Sylvie.plugins." + module)
+    logging.getLogger("pyrogram").setlevel(logging.INFO)    
     idle()

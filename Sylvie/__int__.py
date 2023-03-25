@@ -4,7 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorClient as async_mongo
 from config import *
 
 app = Client(
-    'Sylvie',
+    "Sylvie",
     api_id=API_ID,
     api_hash=API_HASH,
     bot_token=BOT_TOKEN

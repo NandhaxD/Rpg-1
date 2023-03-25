@@ -1,63 +1,61 @@
-from Database.classes import *
-from Database.functions import *
-from Database.db import *
+from .functions import *
 
 # Items
-common_sword = Items(Name="Regular Sword", Cost=10, CostToSale=8, ItemType='weapon', HP=0, Mana=0, Attack=2,
-                             MagicAttack=0, Armour=0, MagicArmour=0, ReqLevel=1, Availability=1)
-sharp_sword = Items(Name="Sharp Sword", Cost=25, CostToSale=15, ItemType='weapon', HP=0, Mana=0, Attack=4,
-                            MagicAttack=0, Armour=0, MagicArmour=0, ReqLevel=2, Availability=2)
-common_wand = Items(Name="Common Staff", Cost=10, CostToSale=8, ItemType='weapon', HP=0, Mana=0, Attack=0,
-                            MagicAttack=2, Armour=0, MagicArmour=0, ReqLevel=1, Availability=1)
-uncommon_wand = Items(Name="Uncommon Staff", Cost=25, CostToSale=15, ItemType='weapon', HP=0, Mana=0, Attack=0,
-                              MagicAttack=4, Armour=0, MagicArmour=0, ReqLevel=2, Availability=2)
-old_jacket = Items(Name="Old Jacket", Cost=10, CostToSale=8, ItemType='armour', HP=5, Mana=0, Attack=0,
-                           MagicAttack=0, Armour=2, MagicArmour=0, ReqLevel=1, Availability=1)
-sturdy_jacket = Items(Name="Strong Jacket", Cost=20, CostToSale=18, ItemType='armour', HP=10, Mana=0, Attack=0,
-                              MagicAttack=0, Armour=4, MagicArmour=0, ReqLevel=2, Availability=2)
-common_helmet = Items(Name="Regular Helmet", Cost=5, CostToSale=3, ItemType='helmet', HP=2, Mana=0, Attack=0,
-                              MagicAttack=0, Armour=1, MagicArmour=0, ReqLevel=1, Availability=1)
-common_boots = Items(Name="Regular Boots", Cost=4, CostToSale=2, ItemType='boots', HP=2, Mana=0, Attack=0,
-                             MagicAttack=0, Armour=1, MagicArmour=0, ReqLevel=1, Availability=1)
-common_hp = Items(Name="Health Potion", Cost=5, CostToSale=3, ItemType='potion', HP=5, Mana=0, Attack=0,
-                          MagicAttack=0, Armour=0, MagicArmour=0, ReqLevel=1, Availability=1)
+common_sword  = {"name" : "Regular Sword", "cost" : 10, "sell_cost" : 8, "item_type" : "weapon", "hp" : 0, "mana" : 0, "attack" : 2,
+                             "magic_attack" : 0, "armour" : 0, "magic_armour" : 0, "req_level" : 1, "availability" : 1}
+sharp_sword  = {"name" : "Sharp Sword", "cost" : 25, "sell_cost" : 15, "item_type" : "weapon", "hp" : 0, "mana" : 0, "attack" : 4,
+                            "magic_attack" : 0, "armour" : 0, "magic_armour" : 0, "req_level" : 2, "availability" : 2}
+common_wand  = {"name" : "Common Staff", "cost" : 10, "sell_cost" : 8, "item_type" : "weapon", "hp" : 0, "mana" : 0, "attack" : 0,
+                            "magic_attack" : 2, "armour" : 0, "magic_armour" : 0, "req_level" : 1, "availability" : 1}
+uncommon_wand  = {"name" : "Uncommon Staff", "cost" : 25, "sell_cost" : 15, "item_type" : "weapon", "hp" : 0, "mana" : 0, "attack" : 0,
+                              "magic_attack" : 4, "armour" : 0, "magic_armour" : 0, "req_level" : 2, "availability" : 2}
+old_jacket  = {"name" : "Old Jacket", "cost" : 10, "sell_cost" : 8, "item_type" : "armour", "hp" : 5, "mana" : 0, "attack" : 0,
+                           "magic_attck" : 0, "armour" : 2, "magic_armour" : 0, "req_level" : 1, "availability" : 1}
+sturdy_jacket  = {"name" : "Strong Jacket", "cost" : 20, "sell_cost" : 18, "item_type" : "armour", "hp" : 10, "mana" : 0, "attack" : 0,
+                              "magic_attack" : 0, "armour" : 4, "magic_armour" : 0, "req_level" : 2, "availability" : 2}
+common_helmet  = {"name" : "Regular Helmet", "cost" : 5, "sell_cost" : 3, "item_type" : "helmet", "hp" : 2, "mana" : 0, "attack" : 0,
+                              "magic_attack" : 0, "armour" : 1, "magic_armour" : 0, "req_level" : 1, "availability" : 1}
+common_boots  =  {"name" : "Regular Boots", "cost" : 4, "sell_cost" : 2, "item_type" : "boots", "hp" : 2, "mana" : 0, "attack" : 0,
+                             "magic_attack" : 0, "armour" : 1, "magic_armour" : 0, "req_level" : 1, "availability" : 1}
+common_hp  =  {"name" : "Health Potion", "cost" : 5, "sell_cost" : 3, "item_type" : "potion", "hp" : 5, "mana" : 0, "attack" : 0,
+                          "magic_attack" : 0, "armour" : 0, "magic_armour" : 0, "req_level" : 1, "availability" : 1}
 
-await create_item(common_sword)
-await create_item(sharp_sword)
-await create_item(common_wand)
-await create_item(uncommon_wand)
-await create_item(old_jacket)
-await create_item(sturdy_jacket)
-await create_item(common_helmet)
-await create_item(common_boots)
-await create_item(common_hp)
+create_item(common_sword)
+create_item(sharp_sword)
+create_item(common_wand)
+create_item(uncommon_wand)
+create_item(old_jacket)
+create_item(sturdy_jacket)
+create_item(common_helmet)
+create_item(common_boots)
+create_item(common_hp)
 
 # Locations
-stormwind = Locations(LocationName='Stormgrad', XCoord=0, YCoord=0, LocationType='town')
-solitude = Locations(LocationName='Solitude', XCoord=-7, YCoord=-7, LocationType='town')
-cobalt_mine = Locations(LocationName='Cobalt Cave', XCoord=5, YCoord=4, LocationType='dungeon')
-dwemer_ruins = Locations(LocationName='Dwemer Ruins', XCoord=-13, YCoord=-13, LocationType='dungeon')
+stormwind  =  {"location_name" : "Stormgrad", "x_coord" : 0, "y_coord" : 0, "location_type" : "town"}
+solitude  =  {"location_name" : "Solitude", "x_coord" : -7, "y_coord" : -7, "location_type" : "town"}
+cobalt_mine  =  {"location_name" : "Cobalt Cave", "x_coord" : 5, "y_coord" : 4, "location_type" : "dungeon"}
+dwemer_ruins  =  {"location_name" : "Dwemer Ruins", "x_coord" : -13, "y_coord" : -13, "location_type" : "dungeon"}
 
-await create_location(cobalt_mine)
-await create_location(dwemer_ruins)
-await create_location(stormwind)
-await create_location(solitude)
+create_location(cobalt_mine)
+create_location(dwemer_ruins)
+create_location(stormwind)
+create_location(solitude)
 
 
 # Mobs
-cobalt = Mobs(MobName='Kobold', HP=10, XP=15, Money=5, ReqLevel=1, AttackType='phys', Attack=2, Armour=0,
-                      MagicArmour=0)
-candle_cobalt = Mobs(MobName='Candle Kobold', HP=20, XP=30, Money=10, ReqLevel=1, AttackType='phys',
-                             Attack=4, Armour=2, MagicArmour=0)
-dwemer_spider = Mobs(MobName='Dwarven Spider', HP=40, XP=40, Money=20, ReqLevel=4, AttackType='phys', Attack=3,
-                             Armour=2, MagicArmour=2)
-dwemer_attacker = Mobs(MobName='Dwemer Robot', HP=70, XP=60, Money=40, ReqLevel=4, AttackType='mag',
-                               Attack=5, Armour=3, MagicArmour=2)
-dwemer_centurion = Mobs(MobName='Dwarven Centurion', HP=130, XP=100, Money=60, ReqLevel=4, AttackType='phys',
-                                Attack=7, Armour=5, MagicArmour=5)
+cobalt  =  {"mob_name" : "Kobold", "hp" : 10, "xp" : 15, "money" : 5, "req_level" : 1, "attack_type" : "phys", "attack" : 2, "armour" : 0,
+                      "magic_armour" : 0}
+candle_cobalt  =  {"mob_name" : "Candle Kobold", "hp" : 20, "xp" : 30, "money" : 10, "req_level" : 1, "attack_type" : "phys",
+                             "attack" : 4, "armour" : 2, "magic_armour" : 0}
+dwemer_spider  =  {"mob_name" : "Dwarven Spider", "hp" : 40, "xp" : 40, "money" : 20, "req_level" : 4, "attack_type" : "phys", "attack" : 3,
+                             "armour" : 2, "magic_armour" : 2}
+dwemer_attacker  =  {"mob_name" : "Dwemer Robot", "hp" : 70, "xp" : 60, "money" : 40, "req_level" : 4, "attack_type" : "mag",
+                               "attack" : 5, "armour" : 3, "magic_armour" : 2}
+dwemer_centurion  =  {"mob_name" : "Dwarven Centurion", "hp" : 130, "xp" : 100, "money" : 60, "req_level" : 4, "attack_type" : "phys",
+                                "attack" : 7, "armour" : 5, "magic_armour" : 5}
 
-await create_mob(dwemer_spider)
-await create_mob(dwemer_attacker)
-await create_mob(dwemer_centurion)
-await create_mob(cobalt)
-await create_mob(candle_cobalt)
+create_mob(dwemer_spider)
+create_mob(dwemer_attacker)
+create_mob(dwemer_centurion)
+create_mob(cobalt)
+create_mob(candle_cobalt)
