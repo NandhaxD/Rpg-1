@@ -47,7 +47,7 @@ async def handle(_, cq):
         balance = uwu["Money"]
         await cq.edit_message_text(f"🧝 **Your Character's Statistics:**\n\n"
                                          f"**Name:** `{name}`\n\n"
-                                         f"**Level:*" `{level}` (`{100 - xp}` **To Sl.**)\n\n"
+                                         f"**Level:** `{level}` (`{100 - xp}` **To Sl.**)\n\n"
                                          f"**Health:** `{cur_hp}`/`{hp}`\n\n"
                                          f"**Damage:** `{attack}` ⚔️  `{m_attack}` 🪄\n\n"
                                          f"**Armor:** `{armour}` 🛡️  `{m_armour}` 🔮\n\n"
