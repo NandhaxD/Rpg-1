@@ -1,20 +1,3 @@
-from telebot.async_telebot import AsyncTeleBot, types
-import sqlite3
-from sqlalchemy import select
-from math import floor
-import numpy
-import asyncio
-
-from init_session import session
-from functions import count_distance, get_town, get_map, get_dungeon, go_loc
-from classes import Enemy, Inventory, Persons, Items, Mobs, Locations
-
-TOKEN = '6202624871:AAES0GPYkc3mPND0qYbj21TqhcnhVxp0ldA'
-bot = AsyncTeleBot(TOKEN)
-
-db = sqlite3.connect('gametools.db')
-
-
 # cities interface
 town_markup = types.InlineKeyboardMarkup()
 dungeons_list = types.InlineKeyboardButton("Leave The City", callback_data="leave_city")
