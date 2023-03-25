@@ -7,6 +7,7 @@ from Sylvie.Database import *
 from Sylvie.plugins.buttons import *
 
 cur_fights = dict()
+heal_potion = 9 # the _id of heal potion
 class State:
     answered = False
 
@@ -278,29 +279,29 @@ async def handle(_, cq):
         cur_fights[cq.from_user.id][3].answered = True
         enemy = cur_fights[cq.from_user.id][0]
         player = cur_fights[cq.from_user.id][1]
-        stmt = select(Inventory).where(Inventory.Nickname == cq.from_user.id).where(Inventory.ItemID == 9)
-        if session.scalars(stmt).one().Quantity != 0:
-            stmt1 = select(Persons).where(Persons.Nickname == cq.from_user.id)
-            if session.scalars(stmt).one().Quantity > 0:
-                session.scalars(stmt).one().Quantity -= 1
+        stmt = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': heal_potion})
+        if stmt["Quantity"] != 0:
+            stmt1 = await db.persons.find_one({'user_id': cq.from_user.id})
+            if stmt["Quantity"] > 0:
+                stmt["Quantity"] -= 1
             else:
-                session.scalars(stmt).one().Quantity += 1
-            session.scalars(stmt1).one().CurHP = min((session.scalars(stmt1).one().CurHP + 5), session.scalars(stmt1).one().HP)
-            session.commit()
+                stmt["Quantity"] += 1
+            stmt1["CurHP"] = min((stmt1['CurHP'] + 5), stmt1['HP'])
+            await db.persons.replace_one({"user_id": cq.from_user.id}, stmt1)
+            await db.inventory.replace_one({"user_id": cq.from_user.id, 'item_id': heal_potion}, stmt)
             for i in range(0, 4):
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"You Drank A Health Potion! Restored 5 Hp. Current Health: {session.scalars(stmt1).one().CurHP}\n\n"
-                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
+                await cq.edit_message_text(f"**You Drank A Health Potion! Restored 5 Hp. Current Health:** {session.scalars(stmt1).one().CurHP}\n\n"
+                                                 f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
                 await asyncio.sleep(0.6)
         else:
             for i in range(0, 4):
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"You Reached Into Your Backpack For A Potion, But He Wasn't There!\n\n"
-                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
+                await cq.edit_message_text(f"**You Reached Into Your Backpack For A Potion, But He Wasn't There!**\n\n"
+                                                 f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
                 await asyncio.sleep(0.6)
         if enemy["AttackType"] == 'phys':
-            enemy_damage = numpy.random.choice([enemy["Attack"], enemy["Attack"] * 1.5], p=[0.8, 0.2])
+            enemy_damage = random.choices([enemy["Attack"], enemy["Attack"] * 1.5], weights=[0.8, 0.2])[0]
             player["CurHP"] -= max((enemy_damage - player["Armour"]), 0)
+            await db.persons.replace_one({"user_id": cq.from_user.id}, player)
             if player["CurHP"] <= 0:
                 await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player["Armour"]), 0)}` **Damage.**\n\n"
                                                  f"**You Perished! :(**",
@@ -315,6 +316,7 @@ async def handle(_, cq):
         elif enemy["AttackType"] == 'mag':
             enemy_damage = enemy["Attack"] * 1.5 if random.random() < 0.2 else enemy["Attack"]
             player["CurHP"] -= max((enemy_damage - player["MagicArmour"]), 0)
+            await db.persons.replace_one({"user_id": cq.from_user.id}, player)
             if player["CurHP"] <= 0:
                 await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Hurt', 'Scratched'])}` **You On** `{max((enemy_damage - player["MagicArmour"]), 0)}` **Damage.**\n\n"
                                                  f"**You Perished ! :(**",
