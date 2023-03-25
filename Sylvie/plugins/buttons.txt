@@ -1,32 +1,24 @@
-# cities interface
-town_markup = types.InlineKeyboardMarkup()
-dungeons_list = types.InlineKeyboardButton("Leave The City", callback_data="leave_city")
-shop = types.InlineKeyboardButton("Local Store", callback_data="shop")
-stats = types.InlineKeyboardButton("Character Stats", callback_data="stats")
-inventory = types.InlineKeyboardButton("Inventory", callback_data='inventory')
-town_markup.add(dungeons_list)
-town_markup.add(inventory)
-town_markup.add(shop)
-town_markup.add(stats)
+# cities buttons
+town_markup = InlineKeyboardMarkup([
+    [InlineKeyboardButton("Leave The City", callback_data="leave_city")],
+    [InlineKeyboardButton("Inventory", callback_data="inventory")],
+    [InlineKeyboardButton("Local Store", callback_data="shop")],
+    [InlineKeyboardButton("Character Stats", callback_data="stats")]
+])
 
-# shop interface
-shop_markup_1 = types.InlineKeyboardMarkup()
-shop_markup_2 = types.InlineKeyboardMarkup()
-back_shop_town = types.InlineKeyboardButton("Back", callback_data='back_town')
-items_1 = session.execute(select(Items).where(Items.Availability == 1))
-items_2 = session.execute(select(Items).where(Items.Availability == 2))
-for item_1 in items_1:
-    t_item = types.InlineKeyboardButton(f"Buy {item_1.Items.Name}: {item_1.Items.Cost} 💎",
-                                        callback_data=f'buy_{item_1.Items.ItemID}')
-    shop_markup_1.add(t_item)
-for item_2 in items_2:
-    t_item = types.InlineKeyboardButton(f"Buy {item_2.Items.Name}: {item_2.Items.Cost} 💎",
-                                        callback_data=f'buy_{item_2.Items.ItemID}')
-    shop_markup_2.add(t_item)
-shop_markup_1.add(back_shop_town)
-shop_markup_2.add(back_shop_town)
+# shop buttons
+back_shop_town = InlineKeyboardButton("Back", callback_data='back_town')
+items_1 = await db.items.find({'Availability': 1}).to_list(length=None)
+buttons_1 = [InlineKeyboardButton(f"Buy {item['Name']}: {item['Cost']} 💎", callback_data=f"buy_{item['ItemID']}") for item in items_1]
+shop_markup_1 = InlineKeyboardMarkup([buttons_1 + [back_shop_town]])
+items_2 = await db.items.find({'Availability': 2}).to_list(length=None)
+buttons_2 = [InlineKeyboardButton(f"Buy {item['Name']}: {item['Cost']} 💎", callback_data=f"buy_{item['ItemID']}") for item in items_2]
+shop_markup_2 = InlineKeyboardMarkup([buttons_2 + [back_shop_town]])
 
+# stats buttons
 stats_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_data='back_town')]])
+
+# location buttons
 x_1 = (await db.locations.find_one({"LocationID": 1}))["XCoord"]
 y_1 = (await db.locations.find_one({"LocationID": 1}))["YCoord"]
 x_2 = (await db.locations.find_one({"LocationID": 2}))["XCoord"]
@@ -35,12 +27,7 @@ x_3 = (await db.locations.find_one({"LocationID": 3}))["XCoord"]
 y_3 = (await db.locations.find_one({"LocationID": 3}))["YCoord"]
 x_4 = (await db.locations.find_one({"LocationID": 4}))["XCoord"]
 y_4 = (await db.locations.find_one({"LocationID": 4}))["YCoord"]
-battle_markup = InlineKeyboardMarkup([
-    [InlineKeyboardButton("Estimate", callback_data='check')],
-    [InlineKeyboardButton("Attack", callback_data='attack')],
-    [InlineKeyboardButton("Drink The Potion", callback_data='heal')]
-])
-check_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Attack", callback_data='attack')]])
+
 back_location_town = InlineKeyboardButton("Back", callback_data='back_town')
 back_location_dungeon = InlineKeyboardButton("Back", callback_data='back_dungeon')
 destinations = session.execute(select(Locations))
@@ -72,10 +59,30 @@ choose_location_1_markup = InlineKeyboardMarkup(choose_location_1_markup)
 choose_location_2_markup = InlineKeyboardMarkup(choose_location_2_markup)
 choose_location_3_markup = InlineKeyboardMarkup(choose_location_3_markup)
 choose_location_4_markup = InlineKeyboardMarkup(choose_location_4_markup)
+
+# battle buttons
+battle_markup = InlineKeyboardMarkup([
+    [InlineKeyboardButton("Estimate", callback_data='check')],
+    [InlineKeyboardButton("Attack", callback_data='attack')],
+    [InlineKeyboardButton("Drink The Potion", callback_data='heal')]
+])
+
+# evaluation buttons
+check_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Attack", callback_data='attack')]])
+
+# dungeon buttons
 dungeon_gate_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Go To The Dungeon!", callback_data='enter_dungeon'),InlineKeyboardButton("Character Stats", callback_data="stats")],[InlineKeyboardButton("Back", callback_data='leave_city')]])
+
+# victory buttons
 win_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_data='leave_city')], [InlineKeyboardButton("Keep Going", callback_data='enter_dungeon')]])
+
+# death buttons
 death_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Be Reborn", callback_data='revive')]])
+
+# no money buttons
 no_money_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_data='back_town')]])
+
+# deal buttons
 after_deal_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_data='inventory')]])
 
 cur_fights = dict()
