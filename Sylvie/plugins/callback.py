@@ -13,6 +13,13 @@ class State:
 
 @bot.callback_query()
 async def handle(_, cq):
+    back_shop_town = InlineKeyboardButton("Back", callback_data="back_town")
+    items_1 = await db.items.find({"availability": 1}).to_list(length=None)
+    buttons_1 = [InlineKeyboardButton(f'Buy {item["name"]}: {item["cost"]} 💎', callback_data=f"buy_{item['_id']}") for item in items_1]
+    shop_markup_1 = InlineKeyboardMarkup([buttons_1 + [back_shop_town]])
+    items_2 = await db.items.find({"availability": 2}).to_list(length=None)
+    buttons_2 = [InlineKeyboardButton(f"Buy {item['name']}: {item['cost']} 💎", callback_data=f"buy_{item['_id']}") for item in items_2]
+    shop_markup_2 = InlineKeyboardMarkup([buttons_2 + [back_shop_town]])
     async def wait(cq, state):
         for i in range(300):
             if state.answered:
