@@ -2,6 +2,7 @@ from pyrogram import *
 from pyrogram.types import *
 
 from Sylvie import *
+from Sylvie.Database import *
 from Sylvie.plugins.buttons import *
 
 cur_fights = dict()
@@ -153,6 +154,7 @@ async def handle(_, cq):
                     state = State()
                     cur_fights[cq.from_user.id][3] = state
                     await wait(cq, state)
+        await db.persons.replace_one({"user_id": cq.from_user.id}, player)
     elif cq.data == 'check':
         print(cur_fights)
         enemy = cur_fights[cq.from_user.id][0]
@@ -167,6 +169,7 @@ async def handle(_, cq):
         player["LocationID"] = 1
         player["CurHP"] = player["HP"]
         await get_town(cq)
+        await db.persons.replace_one({"user_id": cq.from_user.id}, player)
     elif cq.data[0:3] == 'buy':
         player = await db.persons.find_one({"user_id": cq.from_user.id})
         item = await db.items.find_one({"_id": int(cq.data[4:])})
@@ -179,23 +182,18 @@ async def handle(_, cq):
                                             parse_mode=enums.ParseMode.Markdown)
         else:
             player["Money"] -= item["Cost"]
-            item_in_inv = session.execute(select(Inventory).where(Inventory.Name == cq.from_user.username).where(
-                Inventory.ItemID == item.ItemID))
-            if item_in_inv.scalar() is None:
-                print('aaa')
-                session.add(
-                    Inventory(Name=player["Name"], ItemID=int(cq.data[4:]), Quantity=0))
-                session.commit()
-            stmt2 = select(Inventory).where(Inventory.Name == cq.from_user.id).where(
-                Inventory.ItemID == item.ItemID)
-            item_in_inv_changeable = session.scalars(stmt2)
-            amt = session.execute(select(Inventory.Quantity).where(Inventory.ItemID == item.ItemID)).scalar()
-            if amt <= 0:
-                item_in_inv_changeable.one().Quantity -= 1
+            await db.persons.replace_one({"user_id": cq.from_user.id}, player)
+            item_in_inv = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item["ItemID"]})
+            if item_in_inv is None:
+                print('aaa')    
+                new_data = Inventory(user_id=cq.from_user.id, Name=player["Name"], ItemID=int(cq.data[4:]), Quantity=0))
+                await db.inventory.insert_one(new_data)
+            item_in_inv_changeable = await db.inventory.find_one({'user_id': user_id, 'item_id': item["ItemID"]})
+            if item_in_inv_changeable['Quantity'] <= 0:
+                item_in_inv_changeable['Quantity'] -= 1
             else:
-                item_in_inv_changeable.one().Quantity += 1
-            session.commit()
-            # new_amt = session.execute(select(Inventory.Quantity).where(Inventory.ItemID == item.Item))
+                item_in_inv_changeable['Quantity'] += 1
+            await db.inventory.replace_one({"user_id": cq.from_user.id, 'item_id': item["ItemID"]}, item_in_inv_changeable)
             if player["LocationID"] == 1:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                             text=f"You Bought An Item {item.Name}. You Now Have Them In Your Inventory {abs(amt)+1}.",
