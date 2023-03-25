@@ -236,44 +236,42 @@ async def handle(_, cq):
         await cq.edit_message_text(f"**You Sold** {item_cost["Name"]}",
                                     reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
     elif cq.data[0:3] == 'wea':
+        user = await db.persons.find_one({'user_id': cq.from_user.id})
         item_to_wear = int(cq.data[5:])
-        item_to_wear_inst = session.execute(select(Items).where(Items.ItemID == item_to_wear)).scalar()
-        item_type = item_to_wear_inst.ItemType
+        item_to_wear_inst = await db.items.find_one({"ItemID": item_to_wear})
+        item_type = item_to_wear_inst["ItemType"]
         print(item_type)
-        if item_to_wear_inst.ReqLevel > session.execute(select(Persons.Level).where(Persons.Nickname == cq.from_user.username)).scalar():
-            await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                        text=f"You Are Too Small, To Wear This Item.",
+        if item_to_wear_inst["ReqLevel"] > user["Level"]:
+            await cq.edit_message_text(f"`You Are Too Small, To Wear This Item.`",
                                         reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
         else:
-            player_inv = session.execute(select(Inventory).where(Inventory.Nickname == cq.from_user.username))
+            player_inv = await db.inventory.find_one({'user_id': cq.from_user.id})
             for item in player_inv:
-                inv_item_type = session.execute(select(Items.ItemType).where(Items.ItemID == item.Inventory.ItemID)).scalar()
+                inv_item_type = await db.items.find_one({"ItemID": item["Inventory"]["ItemID"]})
                 if inv_item_type == item_type:
-                    stmt = select(Inventory).where(Inventory.Nickname == cq.from_user.id).where(Inventory.ItemID == item.Inventory.ItemID)
-                    found_item = session.scalars(stmt).one()
-                    found_item_inst = session.execute(select(Items).where(Items.ItemID == item.Inventory.ItemID)).scalar()
-                    if found_item.Quantity > 0:
-                        found_item.Quantity *= -1
-                        stmt1 = select(Persons).where(Persons.Nickname == cq.from_user.id)
-                        user = session.scalars(stmt1).one()
-                        user.HP -= found_item_inst.HP
-                        user.Attack -= found_item_inst.Attack
-                        user.MagicAttack -= found_item_inst.MagicAttack
-                        user.Armour -= found_item_inst.Armour
-                        user.MagicArmour -= found_item_inst.MagicArmour
-                        session.commit()
-            stmt = select(Inventory).where(Inventory.Nickname == cq.from_user.id).where(Inventory.ItemID == item_to_wear)
-            session.scalars(stmt).one().Quantity *= -1
-            stmt1 = select(Persons).where(Persons.Nickname == cq.from_user.id)
-            user = session.scalars(stmt1).one()
-            user.HP += item_to_wear_inst.HP
-            user.Attack += item_to_wear_inst.Attack
-            user.MagicAttack += item_to_wear_inst.MagicAttack
-            user.Armour += item_to_wear_inst.Armour
-            user.MagicArmour += item_to_wear_inst.MagicArmour
-            session.commit()
-            await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=f"You Put On {session.execute(select(Items.Name).where(Items.ItemID == item_to_wear)).scalar()}",
+                    found_item = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item["Inventory"]["ItemID"]})
+                    found_item_inst = await db.items.find_one({"ItemID": item["Inventory"]["ItemID"]})
+                    if found_item["Quantity"] > 0:
+                        found_item["Quantity"] *= -1
+                        user = await db.persons.find_one({'user_id': cq.from_user.id})
+                        user["HP"] -= found_item_inst["HP"]
+                        user["Attack"] -= found_item_inst["Attack"]
+                        user["MagicAttack"] -= found_item_inst["MagicAttack"]
+                        user["Armour"] -= found_item_inst["Armour"]
+                        user["MagicArmour"] -= found_item_inst["MagicArmour"]
+                        await db.persons.replace_one({"user_id": cq.from_user.id}, user)
+                        await db.inventory.replace_one({"user_id": cq.from_user.id, 'item_id': item["Inventory"]["ItemID"]}, found_item)
+            stmt = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item_to_wear})
+            stmt["Quantity"] *= -1
+            user = await db.persons.find_one({'user_id': cq.from_user.id})
+            user["HP"] += item_to_wear_inst["HP"]
+            user["Attack"] += item_to_wear_inst["Attack"]
+            user["MagicAttack"] += item_to_wear_inst["MagicAttack"]
+            user["Armour"] += item_to_wear_inst["Armour"]
+            user["MagicArmour"] += item_to_wear_inst["MagicArmour"]
+            await db.persons.replace_one({"user_id": cq.from_user.id}, user)
+            await db.inventory.replace_one({"user_id": cq.from_user.id, 'item_id': item_to_wear}, stmt)
+            await cq.edit_message_text(f"**You Put On** `{(await db.items.find_one({"ItemID": item_to_wear}))["Name"]}`",
                                     reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
     elif cq.data == 'heal':
         cur_fights[cq.from_user.id][3].answered = True
