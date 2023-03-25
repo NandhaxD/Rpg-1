@@ -89,7 +89,3 @@ no_money_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_d
 
 # deal buttons
 after_deal_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_data='inventory')]])
-
-cur_fights = dict()
-class State:
-    answered = False
