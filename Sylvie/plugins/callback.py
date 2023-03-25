@@ -195,16 +195,12 @@ async def handle(_, cq):
                 item_in_inv_changeable['Quantity'] += 1
             await db.inventory.replace_one({"user_id": cq.from_user.id, 'item_id': item["ItemID"]}, item_in_inv_changeable)
             if player["LocationID"] == 1:
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"You Bought An Item {item.Name}. You Now Have Them In Your Inventory {abs(amt)+1}.",
+                await cq.edit_message_text(f"**You Bought An Item** `{item["Name"]}`. **You Now Have Them In Your Inventory** `{abs(amt)+1}`.",
                                             reply_markup=shop_markup_1, parse_mode=enums.ParseMode.Markdown)
             elif player["LocationID"] == 2:
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"You Bought An Item {item.Name}. You Now Have Them In Your Inventory {abs(amt) + 1}.",
+                await cq.edit_message_text(f"**You Bought An Item** `{item["Name"]}`. **You Now Have Them In Your Inventory** `{abs(amt) + 1}`.",
                                             reply_markup=shop_markup_2, parse_mode=enums.ParseMode.Markdown)
-        session.commit()
     elif cq.data == 'inventory':
-        # inventory interface
         inventory_markup = types.InlineKeyboardMarkup()
         stmt = select(Inventory).where(Inventory.Name == cq.from_user.id)
         cur_inv = session.scalars(stmt)
