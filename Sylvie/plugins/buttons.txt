@@ -43,21 +43,15 @@ for item_2 in items_2:
 shop_markup_1.add(back_shop_town)
 shop_markup_2.add(back_shop_town)
 
-# statistics interface
-stats_markup = types.InlineKeyboardMarkup()
-back_stats_town = types.InlineKeyboardButton("Back", callback_data='back_town')
-stats_markup.add(back_stats_town)
-
-# location selection interface
-x_1 = session.execute(select(Locations.XCoord).where(Locations.LocationID == 1)).scalar()
-y_1 = session.execute(select(Locations.YCoord).where(Locations.LocationID == 1)).scalar()
-x_2 = session.execute(select(Locations.XCoord).where(Locations.LocationID == 2)).scalar()
-y_2 = session.execute(select(Locations.YCoord).where(Locations.LocationID == 2)).scalar()
-x_3 = session.execute(select(Locations.XCoord).where(Locations.LocationID == 3)).scalar()
-y_3 = session.execute(select(Locations.YCoord).where(Locations.LocationID == 3)).scalar()
-x_4 = session.execute(select(Locations.XCoord).where(Locations.LocationID == 4)).scalar()
-y_4 = session.execute(select(Locations.YCoord).where(Locations.LocationID == 4)).scalar()
-
+stats_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_data='back_town')]])
+x_1 = (await db.locations.find_one({"LocationID": 1}))["XCoord"]
+y_1 = (await db.locations.find_one({"LocationID": 1}))["YCoord"]
+x_2 = (await db.locations.find_one({"LocationID": 2}))["XCoord"]
+y_2 = (await db.locations.find_one({"LocationID": 2}))["YCoord"]
+x_3 = (await db.locations.find_one({"LocationID": 3}))["XCoord"]
+y_3 = (await db.locations.find_one({"LocationID": 3}))["YCoord"]
+x_4 = (await db.locations.find_one({"LocationID": 4}))["XCoord"]
+y_4 = (await db.locations.find_one({"LocationID": 4}))["YCoord"]
 battle_markup = InlineKeyboardMarkup([
     [InlineKeyboardButton("Estimate", callback_data='check')],
     [InlineKeyboardButton("Attack", callback_data='attack')],
