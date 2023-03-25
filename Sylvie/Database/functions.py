@@ -1,10 +1,7 @@
 import asyncio
 from Sylvie import *
-from motor.motor_asyncio import AsyncIOMotorClient as async_mongo
-from config import *
+from Sylvie.Database import *
 
-async_mongo_client = async_mongo(MONGO_URI)
-db = async_mongo_client.Sylvie
 
 def get_item_by_name(name):
     item = db.items.find_one({"name": name})
