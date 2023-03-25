@@ -28,7 +28,7 @@ class Persons:
     def __init__(self, data):
         self.user = data
         self.user_id = data["user_id"]
-        self.name = data["name"]
+        self.name = data["Name"]
         self.level = data["Level"]
         self.hp = data["HP"]
         self.cur_hp = data["CurHP"]
