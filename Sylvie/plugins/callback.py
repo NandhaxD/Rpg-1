@@ -1,3 +1,13 @@
+from pyrogram import *
+from pyrogram.types import *
+
+from Sylvie import *
+from Sylvie.plugins.buttons import *
+
+cur_fights = dict()
+class State:
+    answered = False
+
 @bot.callback_query()
 async def handle(_, cq):
     async def wait(cq, state):
