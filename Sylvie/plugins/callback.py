@@ -188,7 +188,7 @@ async def handle(_, cq):
                 print('aaa')    
                 new_data = Inventory(user_id=cq.from_user.id, Name=player["Name"], ItemID=int(cq.data[4:]), Quantity=0))
                 await db.inventory.insert_one(new_data)
-            item_in_inv_changeable = await db.inventory.find_one({'user_id': user_id, 'item_id': item["ItemID"]})
+            item_in_inv_changeable = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item["ItemID"]})
             if item_in_inv_changeable['Quantity'] <= 0:
                 item_in_inv_changeable['Quantity'] -= 1
             else:
