@@ -201,9 +201,7 @@ async def handle(_, cq):
                 await cq.edit_message_text(f"**You Bought An Item** `{item["Name"]}`. **You Now Have Them In Your Inventory** `{abs(amt) + 1}`.",
                                             reply_markup=shop_markup_2, parse_mode=enums.ParseMode.Markdown)
     elif cq.data == 'inventory':
-        inventory_markup = types.InlineKeyboardMarkup()
-        stmt = select(Inventory).where(Inventory.Name == cq.from_user.id)
-        cur_inv = session.scalars(stmt)
+        cur_inv = await db.inventory.find_one({'user_id': cq.from_user.id})
         text = ''
         for item in cur_inv:
             name = session.execute(select(Items.Name).where(Items.ItemID == item.ItemID)).scalar()
@@ -219,9 +217,8 @@ async def handle(_, cq):
                     f"Sell {name} ({session.execute(select(Items.CostToSale).where(Items.ItemID == item.ItemID)).scalar()} 💎)",
                     callback_data=f'sell_{item.ItemID}'))
         inventory_markup.add(back_stats_town)
-        await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=f"*Your Inventory:*\n\n"
-                                         f"{'Empty!' if text == '' else text}",
+        await cq.edit_message_text(f"**Your Inventory:**\n\n"
+                                         f"{'`Empty`!' if text == '' else `text`}",
                                     reply_markup=inventory_markup, parse_mode=enums.ParseMode.Markdown)
     elif cq.data[0:3] == 'sel':
         item_to_sell = int(cq.data[5:])
