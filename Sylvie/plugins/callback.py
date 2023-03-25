@@ -88,7 +88,7 @@ async def handle(_, cq):
         enemy = Enemy(enemy_id)
         enemy_name = enemy["Name"]
         player = await db.persons.find_one({"user_id": cq.from_user.id})
-        await cq.edit_message_text(f"`{enemy_name}` {random.choice(['`Got In The Way!`', '`Jumped Out Of The Corner!`', '`Crept Unnoticed!`'])}",
+        await cq.edit_message_text(f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
                                     reply_markup=battle_markup)
         player["LocationID"] = -2
         await db.persons.replace_one({"user_id": cq.from_user.id}, player)
@@ -131,11 +131,11 @@ async def handle(_, cq):
                 enemy_damage = random.choices([enemy["Attack"], enemy["Attack"] * 1.5], weights=[0.8, 0.2])[0]
                 player["CurHP"] -= max((enemy_damage - player["Armour"]), 0)
                 if player["CurHP"] <= 0:
-                    await cq.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Wounded`', '`Scratched`'])} **You On** `{max((enemy_damage - player["Armour"]), 0)}` **Damage.**\n\n"
+                    await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player["Armour"]), 0)}` **Damage.**\n\n"
                                                      f"**You Perished! :(**",
                                                 reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
                 else:
-                    await cq.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Wounded`', '`Scratched`'])} **You On** `{max((enemy_damage - player["Armour"]), 0)}` **Damage.**\n\n"
+                    await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player["Armour"]), 0)}` **Damage.**\n\n"
                                                      f"**You Have Left** `{player["CurHP"]}` **Health.**",
                                                 reply_markup=battle_markup, parse_mode=enums.ParseMode.MARKDOWN)
                     state = State()
@@ -145,11 +145,11 @@ async def handle(_, cq):
                 enemy_damage = random.choices([enemy["Attack"], enemy["Attack"] * 1.5], weights=[0.8, 0.2])[0]
                 player["CurHP"] -= max((enemy_damage - player["MagicArmour"]), 0)
                 if player["CurHP"] <= 0:
-                    await cq.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Hurt`', '`Scratched`'])} **You On** `{max((enemy_damage - player["MagicArmour"]), 0)}` **Damage.**\n\n"
+                    await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Hurt', 'Scratched'])}` **You On** `{max((enemy_damage - player["MagicArmour"]), 0)}` **Damage.**\n\n"
                                                      f"**You Perished ! :(**",
                                                 reply_markup=death_markup, parse_mode=enums.ParseMode.MARKDOWN)
                 else:
-                    await cq.edit_message_text(f"**Opponent** {random.choice(['`Cast A Spell`', '`Fireball Launched`', '`Cast A Spell`'])} **And Wounded You On** `{max((enemy_damage - player["MagicArmour"]), 0)}` **Damage.**\n\n"
+                    await cq.edit_message_text(f"**Opponent** `{random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])}` **And Wounded You On** `{max((enemy_damage - player["MagicArmour"]), 0)}` **Damage.**\n\n"
                                                     f"**You Have Left** `{player["CurHP"]}` **Health.**",
                                                 reply_markup=battle_markup, parse_mode=enums.ParseMode.MARKDOWN)
                     state = State()
@@ -302,30 +302,26 @@ async def handle(_, cq):
             enemy_damage = numpy.random.choice([enemy["Attack"], enemy["Attack"] * 1.5], p=[0.8, 0.2])
             player["CurHP"] -= max((enemy_damage - player["Armour"]), 0)
             if player["CurHP"] <= 0:
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Opponent {random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player["Armour"]), 0)} Damage.\n\n"
-                                                 f"*You Perished! :(*",
+                await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player["Armour"]), 0)}` **Damage.**\n\n"
+                                                 f"**You Perished! :(**",
                                             reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
             else:
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Opponent {random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player["Armour"]), 0)} Damage.\n\n"
-                                                 f"You Have Left {player["CurHP"]} Health.",
+                await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player["Armour"]), 0)}` **Damage.**\n\n"
+                                                 f"**You Have Left** `{player["CurHP"]}` **Health.**",
                                             reply_markup=battle_markup, parse_mode=enums.ParseMode.Markdown)
                 state = State()
                 cur_fights[cq.from_user.id][3] = state
                 await wait(cq, state)
         elif enemy["AttackType"] == 'mag':
-            enemy_damage = numpy.random.choice([enemy["Attack"], enemy["Attack"] * 1.5], p=[0.8, 0.2])
+            enemy_damage = enemy["Attack"] * 1.5 if random.random() < 0.2 else enemy["Attack"]
             player["CurHP"] -= max((enemy_damage - player["MagicArmour"]), 0)
             if player["CurHP"] <= 0:
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Opponent {random.choice(['Hit', 'Hurt', 'Scratched'])} You On {max((enemy_damage - player["MagicArmour"]), 0)} Damage.\n\n"
-                                                 f"*You Perished ! :(*",
+                await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Hurt', 'Scratched'])}` **You On** `{max((enemy_damage - player["MagicArmour"]), 0)}` **Damage.**\n\n"
+                                                 f"**You Perished ! :(**",
                                             reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
             else:
-                await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Opponent {random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])} And Wounded You On {max((enemy_damage - player["MagicArmour"]), 0)} Damage.\n\n"
-                                                 f"You Have Left {player["CurHP"]} Health.",
+                await cq.edit_message_text(f"**Opponent** `{random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])}` **And Wounded You On** `{max((enemy_damage - player["MagicArmour"]), 0)}` **Damage.**\n\n"
+                                                 f"**You Have Left** `{player["CurHP"]}` **Health.**",
                                             reply_markup=battle_markup, parse_mode=enums.ParseMode.Markdown)
                 state = State()
                 cur_fights[cq.from_user.id][3] = state
