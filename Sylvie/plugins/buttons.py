@@ -2,6 +2,7 @@ from pyrogram import *
 from pyrogram.types import *
 
 from Sylvie import *
+from Sylvie.plugins.callback import *
 from Sylvie.Database import *
 
 # cities buttons
@@ -11,15 +12,6 @@ town_markup = InlineKeyboardMarkup([
     [InlineKeyboardButton("Local Store", callback_data="shop")],
     [InlineKeyboardButton("Character Stats", callback_data="stats")]
 ])
-
-# shop buttons
-back_shop_town = InlineKeyboardButton("Back", callback_data="back_town")
-items_1 = db.items.find({"availability": 1}).to_list(length=None)
-buttons_1 = [InlineKeyboardButton(f'Buy {item["name"]}: {item["cost"]} 💎', callback_data=f"buy_{item['_id']}") for item in items_1.result()]
-shop_markup_1 = InlineKeyboardMarkup([buttons_1 + [back_shop_town]])
-items_2 = db.items.find({"availability": 2}).to_list(length=None)
-buttons_2 = [InlineKeyboardButton(f"Buy {item['name']}: {item['cost']} 💎", callback_data=f"buy_{item['_id']}") for item in items_2]
-shop_markup_2 = InlineKeyboardMarkup([buttons_2 + [back_shop_town]])
 
 # stats buttons
 stats_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_data="back_town")]])
