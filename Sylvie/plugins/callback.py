@@ -201,6 +201,7 @@ async def handle(_, cq):
                 await cq.edit_message_text(f"**You Bought An Item** `{item["Name"]}`. **You Now Have Them In Your Inventory** `{abs(amt) + 1}`.",
                                             reply_markup=shop_markup_2, parse_mode=enums.ParseMode.Markdown)
     elif cq.data == 'inventory':
+        inventory_markup = []
         cur_inv = await db.inventory.find_one({'user_id': cq.from_user.id})
         text = ''
         for item in cur_inv:
@@ -219,22 +220,20 @@ async def handle(_, cq):
                     callback_data=f'sell_{item["ItemID"]}'))
         await cq.edit_message_text(f"**Your Inventory:**\n\n"
                                          f"{'`Empty`!' if text == '' else `text`}",
-                                    reply_markup=inventory_markup, parse_mode=enums.ParseMode.Markdown)
+                                    reply_markup=InlineKeyboardMarkup(inventory_markup), parse_mode=enums.ParseMode.Markdown)
     elif cq.data[0:3] == 'sel':
         item_to_sell = int(cq.data[5:])
-        stmt = select(Inventory).where(Inventory.Nickname == cq.from_user.id).where(
-            Inventory.ItemID == item_to_sell)
-        item_in_inv = session.scalars(stmt).one()
-        if item_in_inv.Quantity < 0:
-            item_in_inv.Quantity += 1
-        elif item_in_inv.Quantity > 0:
-            item_in_inv.Quantity -= 1
-        stmt1 = select(Persons).where(Persons.Nickname == cq.from_user.id)
-        user = session.scalars(stmt1).one()
-        user.Money += session.execute(select(Items.CostToSale).where(Items.ItemID == item_to_sell)).scalar()
-        session.commit()
-        await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                    text=f"You Sold {session.execute(select(Items.Name).where(Items.ItemID == item_to_sell)).scalar()}",
+        item_in_inv = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item_to_sell})
+        if item_in_inv["Quantity"] < 0:
+            item_in_inv["Quantity"] += 1
+        elif item_in_inv["Quantity"] > 0:
+            item_in_inv["Quantity"] -= 1
+        user = await db.persons.find_one({'user_id': cq.from_user.id})
+        item_cost = await db.items.find_one({"ItemID": item_to_sell})
+        user["Money"] += item_cost["CostToSale"]
+        await db.persons.replace_one({"user_id": cq.from_user.id}, user)
+        await db.inventory.replace_one({"user_id": cq.from_user.id, 'item_id': item_to_sell}, item_in_inv)
+        await cq.edit_message_text(f"**You Sold** {item_cost["Name"]}",
                                     reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
     elif cq.data[0:3] == 'wea':
         item_to_wear = int(cq.data[5:])
