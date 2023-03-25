@@ -123,7 +123,7 @@ async def handle(_, cq):
         else:
             for i in range(0, 4):
                 await cq.edit_message_text(f"{crit}\n**The Enemy Has** `{enemy["HP"]}` **Health.**\n\n"
-                                                 f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode="Markdown")
+                                                 f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
                 await asyncio.sleep(0.6)
             if enemy["AttackType"] == 'phys':
                 enemy_damage = random.choices([enemy["Attack"], enemy["Attack"] * 1.5], weights=[0.8, 0.2])[0]
@@ -131,7 +131,7 @@ async def handle(_, cq):
                 if player["CurHP"] <= 0:
                     await cq.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Wounded`', '`Scratched`'])} **You On** `{max((enemy_damage - player["Armour"]), 0)}` **Damage.**\n\n"
                                                      f"**You Perished! :(**",
-                                                reply_markup=death_markup, parse_mode="Markdown")
+                                                reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
                 else:
                     await cq.edit_message_text(f"**Opponent** {random.choice(['`Hit`', '`Wounded`', '`Scratched`'])} **You On** `{max((enemy_damage - player["Armour"]), 0)}` **Damage.**\n\n"
                                                      f"**You Have Left** `{player["CurHP"]}` **Health.**",
@@ -176,11 +176,11 @@ async def handle(_, cq):
             if player["LocationID"] == 1:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                             text="Not Enough Coins.", reply_markup=no_money_markup,
-                                            parse_mode="Markdown")
+                                            parse_mode=enums.ParseMode.Markdown)
             elif player["LocationID"] == 2:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                             text="Not Enough Coins.", reply_markup=no_money_markup,
-                                            parse_mode="Markdown")
+                                            parse_mode=enums.ParseMode.Markdown)
         else:
             player["Money"] -= item.Cost
             session.commit()
@@ -204,11 +204,11 @@ async def handle(_, cq):
             if player["LocationID"] == 1:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                             text=f"You Bought An Item {item.Name}. You Now Have Them In Your Inventory {abs(amt)+1}.",
-                                            reply_markup=shop_markup_1, parse_mode="Markdown")
+                                            reply_markup=shop_markup_1, parse_mode=enums.ParseMode.Markdown)
             elif player["LocationID"] == 2:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                             text=f"You Bought An Item {item.Name}. You Now Have Them In Your Inventory {abs(amt) + 1}.",
-                                            reply_markup=shop_markup_2, parse_mode="Markdown")
+                                            reply_markup=shop_markup_2, parse_mode=enums.ParseMode.Markdown)
         session.commit()
     elif cq.data == 'inventory':
         # inventory interface
@@ -233,7 +233,7 @@ async def handle(_, cq):
         await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                     text=f"*Your Inventory:*\n\n"
                                          f"{'Empty!' if text == '' else text}",
-                                    reply_markup=inventory_markup, parse_mode="Markdown")
+                                    reply_markup=inventory_markup, parse_mode=enums.ParseMode.Markdown)
     elif cq.data[0:3] == 'sel':
         item_to_sell = int(cq.data[5:])
         stmt = select(Inventory).where(Inventory.Nickname == cq.from_user.id).where(
@@ -249,7 +249,7 @@ async def handle(_, cq):
         session.commit()
         await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                     text=f"You Sold {session.execute(select(Items.Name).where(Items.ItemID == item_to_sell)).scalar()}",
-                                    reply_markup=after_deal_markup, parse_mode="Markdown")
+                                    reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
     elif cq.data[0:3] == 'wea':
         item_to_wear = int(cq.data[5:])
         item_to_wear_inst = session.execute(select(Items).where(Items.ItemID == item_to_wear)).scalar()
@@ -258,7 +258,7 @@ async def handle(_, cq):
         if item_to_wear_inst.ReqLevel > session.execute(select(Persons.Level).where(Persons.Nickname == cq.from_user.username)).scalar():
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                         text=f"You Are Too Small, To Wear This Item.",
-                                        reply_markup=after_deal_markup, parse_mode="Markdown")
+                                        reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
         else:
             player_inv = session.execute(select(Inventory).where(Inventory.Nickname == cq.from_user.username))
             for item in player_inv:
@@ -289,7 +289,7 @@ async def handle(_, cq):
             session.commit()
             await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                     text=f"You Put On {session.execute(select(Items.Name).where(Items.ItemID == item_to_wear)).scalar()}",
-                                    reply_markup=after_deal_markup, parse_mode="Markdown")
+                                    reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
     elif cq.data == 'heal':
         cur_fights[cq.from_user.id][3].answered = True
         enemy = cur_fights[cq.from_user.id][0]
@@ -306,27 +306,27 @@ async def handle(_, cq):
             for i in range(0, 4):
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                             text=f"You Drank A Health Potion! Restored 5 Hp. Current Health: {session.scalars(stmt1).one().CurHP}\n\n"
-                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode="Markdown")
+                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
                 await asyncio.sleep(0.6)
         else:
             for i in range(0, 4):
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
                                             text=f"You Reached Into Your Backpack For A Potion, But He Wasn't There!\n\n"
-                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode="Markdown")
+                                                 f"The Enemy Is Attacking" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
                 await asyncio.sleep(0.6)
         if enemy["AttackType"] == 'phys':
             enemy_damage = numpy.random.choice([enemy["Attack"], enemy["Attack"] * 1.5], p=[0.8, 0.2])
             player["CurHP"] -= max((enemy_damage - player["Armour"]), 0)
             if player["CurHP"] <= 0:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Opponent {numpy.random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player["Armour"]), 0)} Damage.\n\n"
+                                            text=f"Opponent {random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player["Armour"]), 0)} Damage.\n\n"
                                                  f"*You Perished! :(*",
-                                            reply_markup=death_markup, parse_mode="Markdown")
+                                            reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
             else:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Opponent {numpy.random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player["Armour"]), 0)} Damage.\n\n"
+                                            text=f"Opponent {random.choice(['Hit', 'Wounded', 'Scratched'])} You On {max((enemy_damage - player["Armour"]), 0)} Damage.\n\n"
                                                  f"You Have Left {player["CurHP"]} Health.",
-                                            reply_markup=battle_markup, parse_mode="Markdown")
+                                            reply_markup=battle_markup, parse_mode=enums.ParseMode.Markdown)
                 state = State()
                 cur_fights[cq.from_user.id][3] = state
                 await wait(cq, state)
@@ -335,14 +335,14 @@ async def handle(_, cq):
             player["CurHP"] -= max((enemy_damage - player["MagicArmour"]), 0)
             if player["CurHP"] <= 0:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Opponent {numpy.random.choice(['Hit', 'Hurt', 'Scratched'])} You On {max((enemy_damage - player["MagicArmour"]), 0)} Damage.\n\n"
+                                            text=f"Opponent {random.choice(['Hit', 'Hurt', 'Scratched'])} You On {max((enemy_damage - player["MagicArmour"]), 0)} Damage.\n\n"
                                                  f"*You Perished ! :(*",
-                                            reply_markup=death_markup, parse_mode="Markdown")
+                                            reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
             else:
                 await bot.edit_message_text(chat_id=call.message.chat.id, message_id=call.message.id,
-                                            text=f"Opponent {numpy.random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])} And Wounded You On {max((enemy_damage - player["MagicArmour"]), 0)} Damage.\n\n"
+                                            text=f"Opponent {random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])} And Wounded You On {max((enemy_damage - player["MagicArmour"]), 0)} Damage.\n\n"
                                                  f"You Have Left {player["CurHP"]} Health.",
-                                            reply_markup=battle_markup, parse_mode="Markdown")
+                                            reply_markup=battle_markup, parse_mode=enums.ParseMode.Markdown)
                 state = State()
                 cur_fights[cq.from_user.id][3] = state
                 await wait(cq, state)
