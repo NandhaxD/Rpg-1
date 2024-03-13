@@ -23,14 +23,14 @@ stats_markup = InlineKeyboardMarkup(
 battle_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Estimate", callback_data="check")],
-        [InlineKeyboardButton("attack", callback_data="attack")],
+        [InlineKeyboardButton("Attack", callback_data="attack")],
         [InlineKeyboardButton("Drink The Potion", callback_data="heal")]
     ])
 
 # evaluation buttons
 check_markup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton("attack", callback_data="attack")]
+        [InlineKeyboardButton("Attack", callback_data="attack")]
     ])
 
 # dungeon buttons
