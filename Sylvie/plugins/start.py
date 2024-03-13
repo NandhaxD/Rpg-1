@@ -31,5 +31,5 @@ async def start(_, message):
                                        parse_mode=enums.ParseMode.MARKDOWN)
             elif cur_loc_type == "dungeon":
                 cur_dungeon = (await db.locations.find_one({"location_id": cur_loc_id}))["location_name"]
-                await bot.send_message(message.chat.id, f"`You Are In The Dungeon:` ⛰️ **{cur_dungeon}**", reply_markup=town_markup,
+                await bot.send_message(message.chat.id, f"`You Are In The Dungeon:` ⛰️ **{cur_dungeon}**", reply_markup=dungeon_gate_markup,
                                        parse_mode=enums.ParseMode.MARKDOWN)
