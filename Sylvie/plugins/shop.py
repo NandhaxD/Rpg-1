@@ -20,14 +20,17 @@ async def buy(client: Client, cq: CallbackQuery):
     back_shop = InlineKeyboardMarkup([[back_reply]])
     if cq.from_user.id == user_id:
         player = await get_player(cq.from_user.id)
-        item = await get_item(item_id)
+        item = await items.get(item_id)
         if player['money'] < item['cost']:
             await cq.message.edit_text("`Not Enough Coins.`", reply_markup=back_shop, parse_mode=enums.ParseMode.MARKDOWN)
         else:
             player['money'] -= item['cost']
             await update_player(cq.from_user.id, player)
-            await add_item(cq.from_user.id, item_id)
-            await update_item(cq.from_user.id, item_id)
+            is_already = await get_item(cq.from_user.id, item_id)
+            if not is_already:
+                await add_item(cq.from_user.id, item_id)
+            else:
+                await increase_item(cq.from_user.id, item_id)
             await cq.message.edit_text(f"**You Bought An Item** `{item['name']}`. **You Now Have Them In Your Inventory** .", reply_markup=back_shop, parse_mode=enums.ParseMode.MARKDOWN)
 
 @app.on_callback_query(filters.regex("show"))
@@ -54,8 +57,7 @@ async def show_items_by_type(client: Client, cq: CallbackQuery):
 @app.on_message(filters.command("shop"))
 async def shop(client: Client, message: Message):
     close_shop = InlineKeyboardButton("Close 🚫", callback_data=f"close_{message.from_user.id}")
-    cur_loc = (await db.persons.find_one({'user_id': message.from_user.id}))['location_id']
-
+    cur_loc = await get_player(messages.from_user.id)['location_id']
     y = {}
     for x in items.values():
         if not x.get("item_type") in y:
@@ -86,8 +88,7 @@ async def back_shop(client: Client, cq: CallbackQuery):
         return await cq.answer("This Wasn't Requested By You")
     else:
         close_shop = InlineKeyboardButton("Close 🚫", callback_data=f"close_{user_id}")
-        cur_loc = (await db.persons.find_one({'user_id': user_id}))['location_id']
-
+        cur_loc = await get_player(cq.from_user.id)['location_id']
         y = {}
         for x in items.values():
             if not x.get("item_type") in y:
