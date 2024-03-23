@@ -32,7 +32,7 @@ async def get_inventory(user_id):
     return user_inv
 
 async def update_inventory(user_id, item_id, inv):
-    inventory = await db.find_one({'player': user_id, 'item_id': item_to_sell})
+    inventory = await db.inventory.find_one({'player': user_id, 'item_id': item_to_sell})
     if inventory:
         await db.inventory.replace_one({'player': user_id, 'item_id': item_id}, inv)
         return True
