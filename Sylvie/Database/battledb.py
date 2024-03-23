@@ -7,9 +7,16 @@ from pyrogram import *
 from pyrogram.types import*
 
 async def on_battle(user_id: int):
-  is_battling = await db.find_one({"player": user_id})
+  is_battling = await db.battle.find_one({"player": user_id})
   if is_battling:
     return True
+  else:
+    return False
+
+async def get_battle(user_id: int):
+  is_battling = await db.battle.find_one({"player": user_id})
+  if is_battling:
+    return is_battling
   else:
     return False
     
