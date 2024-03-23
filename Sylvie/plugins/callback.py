@@ -25,18 +25,6 @@ async def handle(_, cq):
         await get_dungeon(cq)
     elif cq.data == 'leave_city':
         await get_map(cq)
-    elif cq.data[0:2] == 'go':
-        aim_x = (await db.locations.find_one({'location_id': cq.data[3:]}))['x_coord']
-        aim_y = (await db.locations.find_one({'location_id': cq.data[3:]}))['y_coord']
-        delay = count_distance(cur_loc_x, cur_loc_y, aim_x, aim_y)
-        await go_loc(cq.from_user.id, -1, cq)
-        ticks = floor(delay / 0.6)
-        for i in range(1, ticks):
-            await cq.edit_message_text(f"**On My Way**" + "." * (i % 4),
-                                        parse_mode=enums.ParseMode.Markdown)
-
-            await asyncio.sleep(0.6)
-        await go_loc(cq.from_user.id, int(cq.data[3:]), cq)
     elif cq.data == 'enter_dungeon':
         if cur_loc == 3:
             options = [1, 2]
