@@ -13,7 +13,7 @@ async def on_battle(user_id: int):
   else:
     return False
     
-async def create_battle(user_id: int, enemy: int, cq):
+async def create_battle(user_id: int, enemy, cq):
   start = time.time()
   current_time = datetime.datetime.now()
   unique_code = current_time.strftime("%Y%m%d%H%M%S") + str(random.randint(1000, 9999))
@@ -21,7 +21,7 @@ async def create_battle(user_id: int, enemy: int, cq):
   if is_battling:
     return False
   else:
-      await db.battle.insert_one({"battle_id": unique_code, "player": user_id, "enemy_id": enemy, "time": time.time(), "message_id": cq.message.id})
+      await db.battle.insert_one({"battle_id": unique_code, "player": user_id, "enemy": enemy, "time": time.time(), "message_id": cq.message.id})
       return unique_code
 
 async def end_battle(user_id: int):
