@@ -77,13 +77,6 @@ async def handle(_, cq):
     cur_loc = (await db.persons.find_one({'user_id': message.from_user.id}))['location_id']
     cur_loc_x = (await db.locations.find_one({'location_id': cur_loc}))['x_coord']
     cur_loc_y = (await db.locations.find_one({'location_id': cur_loc}))['y_coord']
-    if cq.data == 'shop':
-        if cur_loc == 1:
-            await cq.edit_message_text("🛒 **Welcome To Shop!**", reply_markup=shop_markup_1,
-                                        parse_mode=enums.ParseMode.MARKDOWN)
-        elif cur_loc == 2:
-            await cq.edit_message_text("🛒 **Welcome To Shop!**", reply_markup=shop_markup_2,
-                                        parse_mode=enums.ParseMode.MARKDOWN)
 
     elif cq.data == 'back_town':
         user_id = int(cq.data.split("_")[1])
