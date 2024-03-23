@@ -5,32 +5,24 @@ from Sylvie import *
 from Sylvie.Database import *
 from Sylvie.plugins.buttons import *
 
-@bot.on_message(filters.command("start"))
+@app.on_message(filters.command("start"))
 async def start(_, message):
-    nickname = await db.persons.find_one({"user_id": message.from_user.id})
-    if nickname is None:
-        answer = await message.chat.ask("**Send Me Your Name:**", parse_mode=enums.ParseMode.MARKDOWN)
-        new_one = Persons(user_id=message.from_user.id, name=answer.text, level=1, hp=10, cur_hp=10, money=50, attack=1, magic_attack=0,
-                    xp=0, armour=0, magic_armour=0, location_id=1)
-        await db.persons.insert_one(new_one)
-        await answer.request.delete()
-        await bot.send_message(message.chat.id,
-                               f"**You Have Successfully Registered. Welcome To The Game, {message.from_user.mention}!**")
-        cur_town_id = (await db.persons.find_one({"user_id": message.from_user.id}))["location_id"]
-        cur_town = (await db.locations.find_one({"location_id": cur_town_id}))["location_name"]
-        await bot.send_message(message.chat.id, f"`You Are In The City:` 🏰 **{cur_town}**", reply_markup=town_markup,
-                               parse_mode=enums.ParseMode.MARKDOWN)
+    player = await get_player(message.from_user.id)
+    if not player:
+        name = await message.chat.ask("**Send Me Your Name:**", parse_mode=enums.ParseMode.MARKDOWN)
+        new_player = await create_player(user_id=message.from_user.id, name=name.text)
+        cur_loc = await get_location(1)
+        await answer.sent_message.delete()
+        await app.send_message(message.chat.id, f"**You Have Successfully Registered. Welcome To The Game, {message.from_user.mention}!**")
+        await app.send_message(message.chat.id, f"`You Are In The City:` 🏰 **{cur_loc["location_name"]}**", reply_markup=town_markup, parse_mode=enums.ParseMode.MARKDOWN)
     else:
-        cur_loc_id = (await db.persons.find_one({"user_id": message.from_user.id}))["location_id"]
-        if cur_loc_id == -1:
+        if player["location_id"] = -1:
             pass
         else:
-            cur_loc_type = (await db.locations.find_one({"location_id": cur_loc_id}))["location_type"]
-            if cur_loc_type == "town":
-                cur_town = (await db.locations.find_one({"location_id": cur_loc_id}))["location_name"]
-                await bot.send_message(message.chat.id, f"`You Are In The City:` 🏰 **{cur_town}**", reply_markup=town_markup,
+            cur_loc = await get_location(player["location_id"])
+            if cur_loc["location_type"] == "town":
+                await app.send_message(message.chat.id, f"`You Are In The City:` 🏰 **{cur_loc["location_name"]}**", reply_markup=town_markup,
                                        parse_mode=enums.ParseMode.MARKDOWN)
-            elif cur_loc_type == "dungeon":
-                cur_dungeon = (await db.locations.find_one({"location_id": cur_loc_id}))["location_name"]
-                await bot.send_message(message.chat.id, f"`You Are In The Dungeon:` ⛰️ **{cur_dungeon}**", reply_markup=dungeon_gate_markup,
+            elif cur_loc["location_type"] == "dungeon":
+                await app.send_message(message.chat.id, f"`You Are In The Dungeon:` ⛰️ **{cur_loc["location_name"]}**", reply_markup=dungeon_gate_markup,
                                        parse_mode=enums.ParseMode.MARKDOWN)
