@@ -13,14 +13,6 @@ class State:
 
 @bot.callback_query()
 async def handle(_, cq):
-    back_shop_town = InlineKeyboardButton("Back", callback_data="back_town")
-    items_1 = await db.items.find({'availability': 1}).to_list(length=None)
-    buttons_1 = [InlineKeyboardButton(f"Buy {item['name']}: {item['cost']} 💎", callback_data=f"buy_{item['_id']}") for item in items_1]
-    shop_markup_1 = InlineKeyboardMarkup([buttons_1 + [back_shop_town]])
-    items_2 = await db.items.find({'availability': 2}).to_list(length=None)
-    buttons_2 = [InlineKeyboardButton(f"Buy {item['name']}: {item['cost']} 💎", callback_data=f"buy_{item['_id']}") for item in items_2]
-    shop_markup_2 = InlineKeyboardMarkup([buttons_2 + [back_shop_town]])
-
     # location buttons
     x_1 = (await db.locations.find_one({'location_id': 1}))['x_coord']
     y_1 = (await db.locations.find_one({'location_id': 1}))['y_coord']
@@ -193,8 +185,8 @@ async def handle(_, cq):
         player['cur_hp'] = player['hp']
         await get_town(cq)
         await db.persons.replace_one({'user_id': cq.from_user.id}, player)
-                                            reply_markup=shop_markup_2, parse_mode=enums.ParseMode.Markdown)
-    elif cq.data == 'heal':
+
+elif cq.data == 'heal':
         cur_fights[cq.from_user.id][3].answered = True
         enemy = cur_fights[cq.from_user.id][0]
         player = cur_fights[cq.from_user.id][1]
