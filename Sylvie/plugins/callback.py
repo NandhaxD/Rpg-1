@@ -1,20 +1,6 @@
 @bot.callback_query()
 async def handle(_, cq):
-    cur_loc = (await db.persons.find_one({'user_id': message.from_user.id}))['location_id']
-    cur_loc_x = (await db.locations.find_one({'location_id': cur_loc}))['x_coord']
-    cur_loc_y = (await db.locations.find_one({'location_id': cur_loc}))['y_coord']
 
-    elif cq.data == 'back_town':
-        user_id = int(cq.data.split("_")[1])
-        cur_loc = await get_player(user_id)["location_id"]
-        if (await get_location(cur_loc)["location_type"]) == "dungeon":
-            await get_dungeon(cq)
-        else:
-            await get_town(cq)
-    elif cq.data == 'back_dungeon':
-        await get_dungeon(cq)
-    elif cq.data == 'leave_city':
-        await get_map(cq)
     elif cq.data == 'enter_dungeon':
         if cur_loc == 3:
             options = [1, 2]
