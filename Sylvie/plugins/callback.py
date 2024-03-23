@@ -6,10 +6,7 @@ from Sylvie import *
 from Sylvie.Database import *
 from Sylvie.plugins.buttons import *
 
-cur_fights = dict()
 heal_potion = 9 # the _id of heal potion
-class State:
-    answered = False
 
 @bot.callback_query()
 async def handle(_, cq):
@@ -54,17 +51,6 @@ async def handle(_, cq):
     choose_location_2_markup = InlineKeyboardMarkup(choose_location_2_markup)
     choose_location_3_markup = InlineKeyboardMarkup(choose_location_3_markup)
     choose_location_4_markup = InlineKeyboardMarkup(choose_location_4_markup)
-
-    async def wait(cq, state):
-        for i in range(300):
-            if state.answered:
-                break
-            await asyncio.sleep(0.2)
-        if not state.answered:
-            state.answered = True
-            await cq.edit_message_text("`You Fell Asleep On The Battlefield And Became An Easy Target For The Enemy.`\n\n"
-                                             f"**You Perished! :(**", reply_markup=death_markup,
-                                        parse_mode=enums.ParseMode.MARKDOWN)
 
     cur_loc = (await db.persons.find_one({'user_id': message.from_user.id}))['location_id']
     cur_loc_x = (await db.locations.find_one({'location_id': cur_loc}))['x_coord']
