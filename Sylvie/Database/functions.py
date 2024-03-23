@@ -9,16 +9,16 @@ from pyrogram.types import *
 def count_distance(x1, y1, x2, y2):
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** (1 / 2)
     
-async def go_loc(user_id, loc_id, message):
+async def go_loc(user_id, loc_id, cq):
     player = await get_player(user_id)
     player['location_id'] = loc_id
     await update_player(user_id, player)
     if loc_id > 0:
         cur_place = await get_location(loc_id)
         if cur_place['location_type'] == "town":
-            await get_town(message)
+            await get_town(cq)
         elif cur_place['location_type'] == "dungeon":
-            await get_dungeon(message)
+            await get_dungeon(cq)
 
 async def get_town(message):
     player = await get_player(message.from_user.id)
