@@ -21,7 +21,7 @@ async def create_battle(user_id: int, enemy, cq):
   if is_battling:
     return False
   else:
-      await db.battle.insert_one({"battle_id": unique_code, "player": user_id, "enemy": enemy, "time": time.time(), "message_id": cq.message.id})
+      await db.battle.insert_one({"battle_id": unique_code, "player": user_id, "time": time.time(), "message_id": cq.message.id, "enemy": enemy})
       return unique_code
 
 async def end_battle(user_id: int):
