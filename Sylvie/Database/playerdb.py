@@ -23,7 +23,7 @@ async def delete_player(user_id: int):
     else:    
         return False
 
-async def update_player(user_id, ply):
+async def update_player(user_id: int, ply):
     player = await db.player.find_one({'player': user_id})
     if player:
         await db.player.replace_one({'player': user_id}, ply)
