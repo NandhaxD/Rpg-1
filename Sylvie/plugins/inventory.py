@@ -1,13 +1,14 @@
-from Sylvie import *
-from Sylvie.Database import *
 from pyrogram import *
 from pyrogram.types import *
 
+from Sylvie import *
+from Sylvie.Database import *
+
 @app.on_callback_query(filters.regex("sell"))
 async def sell(_, cq):
-    user_id = int(cq.data.split("_")[1])
+    player_id = int(cq.data.split("_")[1])
     item_to_sell = int(cq.data.split("_")[2])
-    if not cq.from_user.id == user_id:
+    if not cq.from_user.id == player_id:
         return await cq.answer("This Wasn't Requested By You")
     else:
         after_deal_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back", callback_data=f"inventory_{cq.from_user.id}")]])
@@ -15,11 +16,11 @@ async def sell(_, cq):
         if not item_in_inv:
             return await cq.answer("You Don't Have This Item")
         item_in_inv['quantity'] -= 1
-        user = await db.persons.find_one({'user_id': cq.from_user.id})
+        player = await get_player(cq.from_user.id)
         item_cost = items.get(item_to_sell)
-        user['money'] += item_cost['sell_cost']
-        await db.persons.replace_one({'user_id': cq.from_user.id}, user)
-        await db.inventory.replace_one({'user_id': cq.from_user.id, 'item_id': item_to_sell}, item_in_inv)
+        player['money'] += item_cost['sell_cost']
+        await update_player(cq.from_user.id, player)
+        await update_inventory(cq.from_user.id, item_to_sell, item_in_inv)
         await cq.edit_message_text(f"**You Sold** `{item_cost['name']}` **And Got** `{item_cost['sell_cost']}`",
                                     reply_markup=after_deal_markup, parse_mode=enums.ParseMode.MARKDOWN)
 
