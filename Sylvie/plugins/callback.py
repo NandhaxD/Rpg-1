@@ -1,6 +1,3 @@
-@bot.callback_query()
-async def handle(_, cq):
-
     elif cq.data == 'attack':
         cur_fights[cq.from_user.id][3].answered = True
         enemy = cur_fights[cq.from_user.id][0]
@@ -61,18 +58,6 @@ async def handle(_, cq):
                     state = State()
                     cur_fights[cq.from_user.id][3] = state
                     await wait(cq, state)
-        await db.persons.replace_one({'user_id': cq.from_user.id}, player)
-    elif cq.data == 'check':
-        print(cur_fights)
-        enemy = cur_fights[cq.from_user.id][0]
-        await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}`/`{(await db.mobs.find_one({'mob_name': name}))['name']}`\n" + "**attack:** `{}` {}\n".format(enemy['attack'], '⚔️' if enemy['attack_type'] == 'phys' else '🪄') + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
-                                    reply_markup=check_markup, parse_mode=enums.ParseMode.MARKDOWN)
-    elif cq.data == 'revive':
-        player = cur_fights[cq.from_user.id][1]
-        cur_fights.pop(cq.from_user.id)
-        player['location_id'] = 1
-        player['cur_hp'] = player['hp']
-        await get_town(cq)
         await db.persons.replace_one({'user_id': cq.from_user.id}, player)
 
 elif cq.data == 'heal':
