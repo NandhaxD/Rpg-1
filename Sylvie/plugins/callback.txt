@@ -256,8 +256,9 @@ async def revive_cq(_, cq):
 
 @app.on_callback_query(filters.regex("check"))
 async def check_cq(_, cq):
-    enemy = await get_battle(cq.from_user.id)['enemy']
-    await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}`/`{await get_mob(enemy["mob_id"])['name']}`\n" + "**attack:** `{}` {}\n".format(enemy['attack'], '⚔️' if enemy['attack_type'] == 'phys' else '🪄') + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
+    battle = await get_battle(cq.from_user.id)
+    enemy = battle['enemy']
+    await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}`/`{mob[await get_key(enemy["name"])][battle["probability"]]}`\n" + "**attack:** `{}` {}\n".format(enemy['attack'], '⚔️' if enemy['attack_type'] == 'phys' else '🪄') + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
                                 reply_markup=check_markup, parse_mode=enums.ParseMode.MARKDOWN)
 
 
@@ -277,5 +278,5 @@ async def edungeon_cq(_, cq):
     ])
     await cq.edit_message_text(f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
                                 reply_markup=battle_markup)
-    await create_battle(cq.from_user.id, enemy, cq)
+    await create_battle(cq.from_user.id, enemy, probabilities, cq)
 
