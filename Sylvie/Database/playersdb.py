@@ -1,4 +1,4 @@
-from Sylvie.Database import *
+from Sylvie import db
 
 async def get_player(user_id: int):
     player = await db.player.find_one({"player": user_id})
