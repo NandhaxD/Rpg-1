@@ -4,6 +4,28 @@ from pyrogram.types import *
 from Sylvie import *
 from Sylvie.Database import *
 
+@app.on_callback_query(filters.regex("stats"))
+async def stats_c(client: Client, cq: CallbackQuery):
+    player = await get_player(cq.from_user.id)
+    name = player['name']
+    level = player['level'] 
+    hp = player['hp'] 
+    cur_hp = player['cur_hp']
+    attack = player['attack']
+    m_attack = player['magic_attack']
+    armour = player['armour']
+    m_armour = player['magic_armour']
+    exp = player['exp']
+    balance = player['money']
+    await cq.edit_message_text(f"🧝 **Your Character""s Statistics:**\n\n"
+                                    f"**name:** `{name}`\n\n"
+                                    f"**level:** `{level}` (`{100 - exp}` **To Sl.**)\n\n"
+                                    f"**Health:** `{cur_hp}`/`{hp}`\n\n"
+                                    f"**Damage:** `{attack}` ⚔️  `{m_attack}` 🪄\n\n"
+                                    f"**Armor:** `{armour}` 🛡️  `{m_armour}` 🔮\n\n"
+                                    f"**Balance:** `{balance}` 💎", reply_markup=back_markup,
+                            parse_mode=enums.ParseMode.MARKDOWN)
+    
 @app.on_message(filters.command("stats"))
 async def stats(_, message):
     player = await get_player(message.from_user.id)
