@@ -224,3 +224,38 @@ async def inventory_cq(_, cq):
                 reply_markup=InlineKeyboardMarkup(inventory_markup),
                 parse_mode=enums.ParseMode.MARKDOWN
             )
+
+# battle callback
+@app.on_callback_query(filters.regex("back_town"))
+async def btown_cq(_, cq):
+    user_id = int(cq.data.split("_")[1])
+    cur_loc = await get_player(user_id)["location_id"]
+    if (await get_location(cur_loc)["location_type"]) == "dungeon":
+        await get_dungeon(cq)
+    else:
+        await get_town(cq)
+
+@app.on_callback_query(filters.regex("back_dungeon"))
+async def bdungeon_cq(_, cq):
+    await get_dungeon(cq)
+
+@app.on_callback_query(filters.regex("leave_city"))
+async def leave_city_cq(_, cq):
+    await get_map(cq)
+
+@app.on_callback_query(filters.regex("revive"))
+async def revive_cq(_, cq):
+    await end_battle(cq.from_user.id)
+    player = await get_player(cq.from_user.id)
+    player['location_id'] = 1
+    player['cur_hp'] = player['hp']
+    await get_town(cq)
+    await update_player(cq.from_user.id, player)
+
+@app.on_callback_query(filters.regex("check"))
+async def check_cq(_, cq):
+    enemy = await get_battle(cq.from_user.id)['enemy']
+    await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}`/`{await get_mob(enemy["mob_id"])['name']}`\n" + "**attack:** `{}` {}\n".format(enemy['attack'], '⚔️' if enemy['attack_type'] == 'phys' else '🪄') + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
+                                reply_markup=check_markup, parse_mode=enums.ParseMode.MARKDOWN)
+
+
