@@ -35,3 +35,12 @@ items = {
 }
 
 # mobs
+mobs = {
+1: [
+    {"mob_name": "Slime", "mob_img": "https://graph.org/file/9dc1ae4629bee38d70ede.jpg", "hp": 10, "xp": 15, "money": 5, "req_level": 1, "attack_type": "magic", "attack": 2, "armour": 0, "magic_armour": 2},
+    {"mob_name": "Goblin", "mob_img": "https://graph.org/file/f786d797e884441edf5be.jpg", "hp": 15, "xp": 20, "money": 10, "req_level": 1, "attack_type": "phys", "attack": 3, "armour": 1, "magic_armour": 0},
+    {"mob_name": "Harpy", "mob_img": "https://graph.org/file/65623978721a8642ad45a.jpg", "hp": 20, "xp": 30, "money": 15, "req_level": 2, "attack_type": "phys", "attack": 4, "armour": 2, "magic_armour": 1},
+    {"mob_name": "Troll", "mob_img": "https://graph.org/file/9760cb22bc2a830791806.jpg", "hp": 30, "xp": 40, "money": 20, "req_level": 3, "attack_type": "phys", "attack": 5, "armour": 3, "magic_armour": 0},
+    {"mob_name": "Dragon", "mob_img": "https://graph.org/file/7386dadc8a32de7baa03c.jpg", "hp": 50, "xp": 60, "money": 30, "req_level": 5, "attack_type": "magic", "attack": 8, "armour": 5, "magic_armour": 5}
+]
+}
