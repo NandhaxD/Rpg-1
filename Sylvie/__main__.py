@@ -1,6 +1,6 @@
 import logging
 import importlib
-from pyrogram import idle
+from pyrogram import *
 
 from Sylvie import *
 from Sylvie.plugins import *
