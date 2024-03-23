@@ -16,7 +16,7 @@ async def start(_, message):
     ])
     dungeon_gate_markup = InlineKeyboardMarkup(
     inline_keyboard=[
-        [InlineKeyboardButton("Enter The Dungeon ⚔️", callback_data="enter_dungeon"), InlineKeyboardButton("Character Stats", callback_data="stats")],
+        [InlineKeyboardButton("Enter The Dungeon ⚔️", callback_data="enter_dungeon"), InlineKeyboardButton("Character Stats 👤", callback_data="stats")],
         [InlineKeyboardButton("Back 🔙", callback_data="leave_city")]
     ])
     if not player:
