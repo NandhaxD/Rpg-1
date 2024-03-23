@@ -85,29 +85,10 @@ async def handle(_, cq):
             await cq.edit_message_text("🛒 **Welcome To Shop!**", reply_markup=shop_markup_2,
                                         parse_mode=enums.ParseMode.MARKDOWN)
 
-    elif cq.data == 'stats':
-        user_id = cq.from_user.id
-        uwu = await db.persons.find_one({'user_id': user_id})
-        name = uwu['name']
-        level = uwu['level'] 
-        hp = uwu['hp'] 
-        cur_hp = uwu['cur_hp']
-        attack = uwu['attack']
-        m_attack = uwu['magic_attack']
-        armour = uwu['armour']
-        m_armour = uwu['magic_armour']
-        xp = uwu['xp']
-        balance = uwu['money']
-        await cq.edit_message_text(f"🧝 **Your Character""s Statistics:**\n\n"
-                                         f"**name:** `{name}`\n\n"
-                                         f"**level:** `{level}` (`{100 - xp}` **To Sl.**)\n\n"
-                                         f"**Health:** `{cur_hp}`/`{hp}`\n\n"
-                                         f"**Damage:** `{attack}` ⚔️  `{m_attack}` 🪄\n\n"
-                                         f"**Armor:** `{armour}` 🛡️  `{m_armour}` 🔮\n\n"
-                                         f"**Balance:** `{balance}` 💎", reply_markup=stats_markup,
-                                    parse_mode=enums.ParseMode.MARKDOWN)
     elif cq.data == 'back_town':
-        if cur_loc >= 3:  # will break when naively adding new locks, you need to carefully
+        user_id = int(cq.data.split("_")[1])
+        cur_loc = await get_player(user_id)["location_id"]
+        if (await get_location(cur_loc)["location_type"]) == "dungeon":
             await get_dungeon(cq)
         else:
             await get_town(cq)
@@ -219,109 +200,7 @@ async def handle(_, cq):
         player['cur_hp'] = player['hp']
         await get_town(cq)
         await db.persons.replace_one({'user_id': cq.from_user.id}, player)
-    elif cq.data[0:3] == 'buy':
-        player = await db.persons.find_one({'user_id': cq.from_user.id})
-        item = await db.items.find_one({'_id': int(cq.data[4:])})
-        if player['money'] < item['cost']:
-            if player['location_id'] == 1:
-                await cq.edit_message_text("`Not Enough Coins.`", reply_markup=no_money_markup,
-                                            parse_mode=enums.ParseMode.Markdown)
-            elif player['location_id'] == 2:
-                await cq.edit_message_text("`Not Enough Coins.`", reply_markup=no_money_markup,
-                                            parse_mode=enums.ParseMode.Markdown)
-        else:
-            player['money'] -= item['cost']
-            await db.persons.replace_one({'user_id': cq.from_user.id}, player)
-            item_in_inv = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item['item_id']})
-            if item_in_inv is None:
-                print("aaa")    
-                new_data = Inventory(user_id=cq.from_user.id, name=player['name'], item_id=int(cq.data[4:]), quantity=0)
-                await db.inventory.insert_one(new_data)
-            item_in_inv_changeable = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item['item_id']})
-            if item_in_inv_changeable['quantity'] <= 0:
-                item_in_inv_changeable['quantity'] -= 1
-            else:
-                item_in_inv_changeable['quantity'] += 1
-            await db.inventory.replace_one({'user_id': cq.from_user.id, 'item_id': item['item_id']}, item_in_inv_changeable)
-            if player['location_id'] == 1:
-                await cq.edit_message_text(f"**You Bought An Item** `{item['name']}`. **You Now Have Them In Your Inventory** `{abs(amt)+1}`.",
-                                            reply_markup=shop_markup_1, parse_mode=enums.ParseMode.Markdown)
-            elif player['location_id'] == 2:
-                await cq.edit_message_text(f"**You Bought An Item** `{item['name']}`. **You Now Have Them In Your Inventory** `{abs(amt) + 1}`.",
                                             reply_markup=shop_markup_2, parse_mode=enums.ParseMode.Markdown)
-    elif cq.data == 'inventory':
-        inventory_markup = []
-        cur_inv = await db.inventory.find_one({'user_id': cq.from_user.id})
-        text = ""
-        for item in cur_inv:
-            item_doc = await db.items.find_one({'item_id': item['item_id']})
-            name = item_doc['name']
-            quantity = item['quantity']
-            item_type = item_doc['item_type']
-            if quantity != 0:
-                if quantity < 0 and item_type != 'potion':
-                    inventory_markup.append(InlineKeyboardButton(
-                        f"Put On {name}",
-                        callback_data=f"wear_{item['item_id']}"))
-                text += "{} - {} PC. {}\n".format(name, abs(quantity), '✅' if quantity > 0 else '')
-                inventory_markup.append(InlineKeyboardButton(
-                    f"Sell {name} ({item_doc['sell_cost']} 💎)",
-                    callback_data=f"sell_{item['item_id']}"))
-        await cq.edit_message_text(f"**Your Inventory:**\n\n"
-                                         "`{}`".format('Empty!' if text ==  "" else text),
-                                    reply_markup=InlineKeyboardMarkup(inventory_markup), parse_mode=enums.ParseMode.Markdown)
-    elif cq.data[0:3] == 'sel':
-        item_to_sell = int(cq.data[5:])
-        item_in_inv = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item_to_sell})
-        if item_in_inv['quantity'] < 0:
-            item_in_inv['quantity'] += 1
-        elif item_in_inv['quantity'] > 0:
-            item_in_inv['quantity'] -= 1
-        user = await db.persons.find_one({'user_id': cq.from_user.id})
-        item_cost = await db.items.find_one({'item_id': item_to_sell})
-        user['money'] += item_cost['sell_cost']
-        await db.persons.replace_one({'user_id': cq.from_user.id}, user)
-        await db.inventory.replace_one({'user_id': cq.from_user.id, 'item_id': item_to_sell}, item_in_inv)
-        await cq.edit_message_text(f"**You Sold** {item_cost['name']}",
-                                    reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
-    elif cq.data[0:3] == 'wea':
-        user = await db.persons.find_one({'user_id': cq.from_user.id})
-        item_to_wear = int(cq.data[5:])
-        item_to_wear_inst = await db.items.find_one({'item_id': item_to_wear})
-        item_type = item_to_wear_inst['item_type']
-        print(item_type)
-        if item_to_wear_inst['req_level'] > user['level']:
-            await cq.edit_message_text(f"`You Are Too Small, To Wear This Item.`",
-                                        reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
-        else:
-            player_inv = await db.inventory.find_one({'user_id': cq.from_user.id})
-            for item in player_inv:
-                inv_item_type = await db.items.find_one({'item_id': item['Inventory']['item_id']})
-                if inv_item_type == item_type:
-                    found_item = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item['Inventory']['item_id']})
-                    found_item_inst = await db.items.find_one({'item_id': item['Inventory']['item_id']})
-                    if found_item['quantity'] > 0:
-                        found_item['quantity'] *= -1
-                        user = await db.persons.find_one({'user_id': cq.from_user.id})
-                        user['hp'] -= found_item_inst['hp']
-                        user['attack'] -= found_item_inst['attack']
-                        user['magic_attack'] -= found_item_inst['magic_attack']
-                        user['armour'] -= found_item_inst['armour']
-                        user['magic_armour'] -= found_item_inst['magic_armour']
-                        await db.persons.replace_one({'user_id': cq.from_user.id}, user)
-                        await db.inventory.replace_one({'user_id': cq.from_user.id, 'item_id': item['Inventory']['item_id']}, found_item)
-            stmt = await db.inventory.find_one({'user_id': cq.from_user.id, 'item_id': item_to_wear})
-            stmt['quantity'] *= -1
-            user = await db.persons.find_one({'user_id': cq.from_user.id})
-            user['hp'] += item_to_wear_inst['hp']
-            user['attack'] += item_to_wear_inst['attack']
-            user['magic_attack'] += item_to_wear_inst['magic_attack']
-            user['armour'] += item_to_wear_inst['armour']
-            user['magic_armour'] += item_to_wear_inst['magic_armour']
-            await db.persons.replace_one({'user_id': cq.from_user.id}, user)
-            await db.inventory.replace_one({'user_id': cq.from_user.id, 'item_id': item_to_wear}, stmt)
-            await cq.edit_message_text(f"**You Put On** `{(await db.items.find_one({'item_id': item_to_wear}))['name']}`",
-                                    reply_markup=after_deal_markup, parse_mode=enums.ParseMode.Markdown)
     elif cq.data == 'heal':
         cur_fights[cq.from_user.id][3].answered = True
         enemy = cur_fights[cq.from_user.id][0]
