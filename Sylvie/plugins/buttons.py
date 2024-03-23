@@ -4,7 +4,7 @@ from Sylvie import *
 from Sylvie.plugins.callback import *
 from Sylvie.Database import *
 
-# cities buttons
+# cities button
 town_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Leave The City", callback_data="leave_city")],
@@ -13,13 +13,13 @@ town_markup = InlineKeyboardMarkup(
         [InlineKeyboardButton("Character Stats", callback_data="stats")]
     ])
 
-# stats buttons
-stats_markup = InlineKeyboardMarkup(
+# back button
+back_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Back", callback_data="back_town")]
     ])
 
-# battle buttons
+# battle button
 battle_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Estimate", callback_data="check")],
@@ -27,39 +27,39 @@ battle_markup = InlineKeyboardMarkup(
         [InlineKeyboardButton("Drink The Potion", callback_data="heal")]
     ])
 
-# evaluation buttons
+# evaluation button
 check_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Attack", callback_data="attack")]
     ])
 
-# dungeon buttons
+# dungeon button
 dungeon_gate_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Go To The Dungeon!", callback_data="enter_dungeon"), InlineKeyboardButton("Character Stats", callback_data="stats")],
         [InlineKeyboardButton("Back", callback_data="leave_city")]
     ])
 
-# victory buttons
+# victory button
 win_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Back", callback_data="leave_city")],
         [InlineKeyboardButton("Keep Going", callback_data="enter_dungeon")]
     ])
 
-# death buttons
+# death button
 death_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Be Reborn", callback_data="revive")]
     ])
 
-# no money buttons
+# no money button
 no_money_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Back", callback_data="inventory")]
     ])
 
-# deal buttons
+# deal button
 after_deal_markup = InlineKeyboardMarkup(
     inline_keyboard=[
         [InlineKeyboardButton("Back", callback_data="inventory")]
