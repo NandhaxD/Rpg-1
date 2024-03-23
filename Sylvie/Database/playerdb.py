@@ -22,3 +22,11 @@ async def delete_player(user_id: int):
         return True
     else:    
         return False
+
+async def update_player(user_id, ply):
+    player = await db.player.find_one({'player': user_id})
+    if player:
+        await db.player.replace_one({'player': user_id}, ply)
+        return True
+    else:
+        return False
