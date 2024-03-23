@@ -1,3 +1,9 @@
+from pyrogram import *
+from pyrogram.types import *
+
+from Sylvie import *
+from Sylvie.Database import *
+
 @app.on_message(filters.command("stats"))
 async def stats(_, message):
     player = await get_player(message.from_user.id)
