@@ -66,3 +66,22 @@ async def get_map(message):
                 choose_location_markup.append([InlineKeyboardButton(f"Go: {el["location_name"]} 🚶‍♂️", callback_data=f"go_{el["location_id"]}")])
                 choose_location_markup.append([back_location])
     await app.send_message(message.chat.id, text=text, reply_markup=choose_location_markup, parse_mode=enums.ParseMode.MARKDOWN)
+
+@app.on_callback_query(filters.regex("go"))
+async def gogo(_, cq):
+    player = await get_player(cq.from_user.id)
+    cur_loc = await get_location(player["location_id"])
+    if player["level"] < (await get_location(int(cq.data.split("_")[1])))["req_level"]:
+        return await cq.edit_message_text(f"`Your Level Was Too Low To Travel This Location`\n\n**Required Level:** {(await get_location(int(cq.data.split("_")[1])))["req_level"]}")   
+    else:
+        aim_x = await get_location(int(cq.data.split("_")[1]))['x_coord']
+        aim_y = await get_location(int(cq.data.split("_")[1]))['y_coord']
+        delay = count_distance(cur['x_coord'], cur_loc['y_coord'], aim_x, aim_y)
+        await go_loc(cq.from_user.id, -1, cq)
+        ticks = floor(delay / 0.6)
+        for i in range(1, ticks):
+            await cq.edit_message_text(f"**On My Way**" + "." * (i % 4),
+                                        parse_mode=enums.ParseMode.Markdown)
+
+            await asyncio.sleep(0.6)
+        await go_loc(cq.from_user.id, int(cq.data.split("_")[1]), cq)
