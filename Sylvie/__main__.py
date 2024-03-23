@@ -22,7 +22,7 @@ def main():
     idle()
 
     while True:
-        check_inactive_users()
+        check_inactive_users(app)
         asyncio.sleep(0.1)
     
 if __name__ == "__main__":
