@@ -1,25 +1,6 @@
 @bot.callback_query()
 async def handle(_, cq):
 
-    elif cq.data == 'enter_dungeon':
-        if cur_loc == 3:
-            options = [1, 2]
-            probabilities = [0.8, 0.2]
-            enemy_id = random.choices(options, probabilities)[0]
-        elif cur_loc == 4:
-            options = [3, 4, 5]
-            probabilities = [0.6, 0.3, 0.1]
-            enemy_id = random.choices(options, probabilities)[0]
-        enemy = Enemy(enemy_id)
-        enemy_name = enemy['name']
-        player = await db.persons.find_one({'user_id': cq.from_user.id})
-        await cq.edit_message_text(f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
-                                    reply_markup=battle_markup)
-        player['location_id'] = -2
-        await db.persons.replace_one({'user_id': cq.from_user.id}, player)
-        state = State()
-        cur_fights[player['name']] = [enemy, player, cur_loc, state]
-        await wait(cq, state)
     elif cq.data == 'attack':
         cur_fights[cq.from_user.id][3].answered = True
         enemy = cur_fights[cq.from_user.id][0]
