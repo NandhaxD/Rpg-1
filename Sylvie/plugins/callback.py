@@ -10,48 +10,6 @@ heal_potion = 9 # the _id of heal potion
 
 @bot.callback_query()
 async def handle(_, cq):
-    # location buttons
-    x_1 = (await db.locations.find_one({'location_id': 1}))['x_coord']
-    y_1 = (await db.locations.find_one({'location_id': 1}))['y_coord']
-    x_2 = (await db.locations.find_one({'location_id': 2}))['x_coord']
-    y_2 = (await db.locations.find_one({'location_id': 2}))['y_coord']
-    x_3 = (await db.locations.find_one({'location_id': 3}))['x_coord']
-    y_3 = (await db.locations.find_one({'location_id': 3}))['y_coord']
-    x_4 = (await db.locations.find_one({'location_id': 4}))['x_coord']
-    y_4 = (await db.locations.find_one({'location_id': 4}))['y_coord']
-
-    back_location_town = InlineKeyboardButton("Back", callback_data="back_town")
-    back_location_dungeon = InlineKeyboardButton("Back", callback_data="back_dungeon")
-    destinations = session.execute(select(Locations))
-    choose_location_1_markup = []
-    choose_location_2_markup = []
-    choose_location_3_markup = []
-    choose_location_4_markup = []
-    for destination in destinations:
-        el_x = session.execute(select(Locations.x_coord).where(Locations.location_id == destination.Locations.location_id)).scalar()
-        el_y = session.execute(select(Locations.y_coord).where(Locations.location_id == destination.Locations.location_id)).scalar()
-        dist_1 = count_distance(x_1, y_1, el_x, el_y)
-        dist_2 = count_distance(x_2, y_2, el_x, el_y)
-        dist_3 = count_distance(x_3, y_3, el_x, el_y)
-        dist_4 = count_distance(x_4, y_4, el_x, el_y)
-        if 0 < dist_1 <= 10:
-            choose_location_1_markup.append([InlineKeyboardButton(f"Go: {destination.Locations.location_name}", callback_data=f"go_{destination.Locations.location_id}")])
-        if 0 < dist_2 <= 10:
-            choose_location_2_markup.append([InlineKeyboardButton(f"Go: {destination.Locations.location_name}", callback_data=f"go_{destination.Locations.location_id}")])
-        if 0 < dist_3 <= 10:
-            choose_location_3_markup.append([InlineKeyboardButton(f"Go: {destination.Locations.location_name}", callback_data=f"go_{destination.Locations.location_id}")])
-        if 0 < dist_4 <= 10:
-            choose_location_4_markup.append([InlineKeyboardButton(f"Go: {destination.Locations.location_name}", callback_data=f"go_{destination.Locations.location_id}")])
-
-    choose_location_1_markup.append([back_location_town])
-    choose_location_2_markup.append([back_location_town])
-    choose_location_3_markup.append([back_location_dungeon])
-    choose_location_4_markup.append([back_location_dungeon])
-    choose_location_1_markup = InlineKeyboardMarkup(choose_location_1_markup)
-    choose_location_2_markup = InlineKeyboardMarkup(choose_location_2_markup)
-    choose_location_3_markup = InlineKeyboardMarkup(choose_location_3_markup)
-    choose_location_4_markup = InlineKeyboardMarkup(choose_location_4_markup)
-
     cur_loc = (await db.persons.find_one({'user_id': message.from_user.id}))['location_id']
     cur_loc_x = (await db.locations.find_one({'location_id': cur_loc}))['x_coord']
     cur_loc_y = (await db.locations.find_one({'location_id': cur_loc}))['y_coord']
