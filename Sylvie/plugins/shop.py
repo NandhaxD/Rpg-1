@@ -19,13 +19,13 @@ async def buy(client: Client, cq: CallbackQuery):
     back_reply = InlineKeyboardButton("Back 🔙", callback_data=f"backshop_{user_id}")
     back_shop = InlineKeyboardMarkup([[back_reply]])
     if cq.from_user.id == user_id:
-        player = await db.persons.find_one({'user_id': cq.from_user.id})
-        item = items.get(item_id)
+        player = await get_player(cq.from_user.id)
+        item = await get_item(item_id)
         if player['money'] < item['cost']:
             await cq.message.edit_text("`Not Enough Coins.`", reply_markup=back_shop, parse_mode=enums.ParseMode.MARKDOWN)
         else:
             player['money'] -= item['cost']
-            await db.persons.replace_one({'user_id': cq.from_user.id}, player)
+            await update_player(cq.from_user.id, player)
             await add_item(cq.from_user.id, item_id)
             await update_item(cq.from_user.id, item_id)
             await cq.message.edit_text(f"**You Bought An Item** `{item['name']}`. **You Now Have Them In Your Inventory** .", reply_markup=back_shop, parse_mode=enums.ParseMode.MARKDOWN)
