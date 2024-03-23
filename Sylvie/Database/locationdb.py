@@ -1,7 +1,8 @@
-from Sylvie import db
+from Sylvie import *
+from Sylvie.Database import *
 
 def get_location(loc_id):
-    location = db.location.find_one({"location_id": loc_id})
+    location = locations.get(loc_id)
     if location:
         return location
     else:
