@@ -1,14 +1,14 @@
 from Sylvie import *
 
 async def add_item(user_id, item_id):
-    doc = {'user_id': user_id, 'item_id': item_id, 'quantity': 0}
+    doc = {'user_id': user_id, 'item_id': item_id, 'quantity': 1}
     result = await db.inventory.find_one(doc)
     if not result:
         result = await db.inventory.insert_one(doc)
     else:
         return None
 
-async def update_item(user_id, item_id):
+async def increase_item(user_id, item_id):
     filter = {'user_id': user_id, 'item_id': item_id}
     update = {'$inc': {'quantity': 1}}
     result = await db.inventory.update_one(filter, update)
