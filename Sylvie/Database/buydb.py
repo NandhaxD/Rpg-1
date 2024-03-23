@@ -16,8 +16,11 @@ async def increase_item(user_id, item_id):
 
 async def get_item(user_id, item_id):
     filter = {'user_id': user_id, 'item_id': item_id}
-    doc = await db.inventory.find_one(filter)
-    return doc
+    item = await db.inventory.find_one(filter)
+    if item:
+        return item
+    else:
+        return False
 
 async def get_inventory(user_id):
     user_filter = {'user_id': user_id}
