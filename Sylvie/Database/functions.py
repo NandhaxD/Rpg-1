@@ -6,6 +6,9 @@ from Sylvie.Database import *
 from pyrogram import *
 from pyrogram.types import * 
 
+def count_distance(x1, y1, x2, y2):
+    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** (1 / 2)
+    
 async def go_loc(user_id, loc_id, message):
     player = await get_player(user_id)
     player['location_id'] = loc_id
@@ -49,29 +52,17 @@ async def get_map(message):
     cur_town = await get_location(player['location_id'])
     cur_town_x = cur_town['x_coord']
     cur_town_y = cur_town['y_coord']
-    destinations = db.locations.find()
     text = "**Available Locations:**\n\n"
+    choose_location_markup = []
     async for el in locations.values():
-    if el["location_id"] != player['location_id']:
-        dist = round(count_distance(cur_town_x, cur_town_y, el['x_coord'], el['y_coord']))
-        if 0 < dist <= 10:
-            text += f"`{el['location_name']}` **-** `{dist}` **Km 🛣️**\n\n"
-    if cur_town_id == 1:
-        await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
-                                    text=text, reply_markup=bot.choose_location_1_markup,
-                                    parse_mode="Markdown")
-    elif cur_town_id == 2:
-        await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
-                                    text=text, reply_markup=bot.choose_location_2_markup,
-                                    parse_mode="Markdown")
-    elif cur_town_id == 3:
-        await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
-                                    text=text, reply_markup=bot.choose_location_3_markup,
-                                    parse_mode="Markdown")
-    elif cur_town_id == 4:
-        await bot.edit_message_text(chat_id=message.chat.id, message_id=message.id,
-                                    text=text, reply_markup=bot.choose_location_4_markup,
-                                    parse_mode="Markdown")
-
-def count_distance(x1, y1, x2, y2):
-    return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** (1 / 2)
+        if el["location_id"] != player['location_id']:
+            dist = round(count_distance(cur_town_x, cur_town_y, el['x_coord'], el['y_coord']))
+            if 0 < dist <= 10:
+                text += f"`{el['location_name']}` **-** `{dist}` **Km 🛣️**\n\n"
+                if x["location_type"] == "town":
+                    back_location = InlineKeyboardButton("Back 🔙", callback_data="back_town")
+                if x["location_type"] == "dungeon":
+                    back_location = InlineKeyboardButton("Back 🔙", callback_data="back_dungeon")
+                choose_location_markup.append([InlineKeyboardButton(f"Go: {el["location_name"]} 🚶‍♂️", callback_data=f"go_{el["location_id"]}")])
+                choose_location_markup.append([back_location])
+    await app.send_message(message.chat.id, text=text, reply_markup=choose_location_markup, parse_mode=enums.ParseMode.MARKDOWN)
