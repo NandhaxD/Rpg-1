@@ -1,13 +1,3 @@
-import random
-from pyrogram import *
-from pyrogram.types import *
-
-from Sylvie import *
-from Sylvie.Database import *
-from Sylvie.plugins.buttons import *
-
-heal_potion = 9 # the _id of heal potion
-
 @bot.callback_query()
 async def handle(_, cq):
     cur_loc = (await db.persons.find_one({'user_id': message.from_user.id}))['location_id']
