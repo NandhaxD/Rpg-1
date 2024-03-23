@@ -24,6 +24,42 @@ async def sell(_, cq):
         await cq.edit_message_text(f"**You Sold** `{item_cost['name']}` **And Got** `{item_cost['sell_cost']}`",
                                     reply_markup=after_deal_markup, parse_mode=enums.ParseMode.MARKDOWN)
 
+@app.on_callback_query(filters.regex("inventory"))
+async def inventory_c(_, cq):
+    cur_inv = await get_inventory(cq.from_user.id)
+    if not cur_inv:
+        return await cq.edit_message_text("`No Inventory Found`")
+    else:
+        inventory_markup = []
+        text = ""
+        for item in cur_inv:
+            item_doc = items.get(int(item['item_id']))
+            name = item_doc['name']
+            quantity = item['quantity']
+            item_type = item_doc['item_type']
+            if not quantity == 0:
+                row_buttons = []
+                if item_type == 'potion':
+                    row_buttons.append(InlineKeyboardButton(
+                        f"Sell {name} ({item_doc['sell_cost']} 💎)",
+                        callback_data=f"sell_{cq.from_user.id}_{int(item['item_id'])}"))
+                else:
+                    row_buttons.append(InlineKeyboardButton(
+                        f"Sell {name} ({item_doc['sell_cost']} 💎)",
+                        callback_data=f"sell_{cq.from_user.id}_{int(item['item_id'])}"))
+                    row_buttons.append(InlineKeyboardButton(
+                        f"Wear {name} {item_doc['item_symbol']}",
+                        callback_data=f"wear_{item['item_id']}"))
+                inventory_markup.append(row_buttons)
+                text += "`{}` **-** `{}` **PC.** {}\n".format(name, abs(quantity), '✅' if quantity > 0 else '')
+        if not text:
+            return await cq.edit_message_text("`Your Inventory Is Empty`")
+        await cq.edit_message_text(
+            "**Your Inventory:**\n\n" + "{}".format(text),
+            reply_markup=InlineKeyboardMarkup(inventory_markup),
+            parse_mode=enums.ParseMode.MARKDOWN
+)
+        
 @app.on_message(filters.command("inventory"))
 async def inventory(_, message):
     cur_inv = await get_inventory(message.from_user.id)
