@@ -1,3 +1,5 @@
+import random
+
 from pyrogram import *
 from pyrogram.types import *
 
@@ -258,19 +260,22 @@ async def check_cq(_, cq):
     await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}`/`{await get_mob(enemy["mob_id"])['name']}`\n" + "**attack:** `{}` {}\n".format(enemy['attack'], '⚔️' if enemy['attack_type'] == 'phys' else '🪄') + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
                                 reply_markup=check_markup, parse_mode=enums.ParseMode.MARKDOWN)
 
-        player = await get_player(cq.from_user.id)
-        options = [0, 1, 2, 3, 4]
-        probabilities = [0.4, 0.3, 0.2, 0.09, 0.01]
-        enemy_id = random.choices(options, probabilities)[0]
-        enemy = mobs[player["location_id"][enemy_id]
-        enemy_name = enemy['name']
-        battle_markup = InlineKeyboardMarkup(
-            inline_keyboard=[
-                [InlineKeyboardButton("Estimate 🧮", callback_data="check")],
-                [InlineKeyboardButton("Attack 🗡️", callback_data="attack")],
-                [InlineKeyboardButton("Drink The Potion ⚱️", callback_data="heal")]
-        ])
-        await cq.edit_message_text(f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
-                                    reply_markup=battle_markup)
-        await create_battle(cq.from_user.id, enemy, cq)
+
+@app.on_callback_query(filters.regex("enter_dungeon"))
+async def edungeon_cq(_, cq):
+    player = await get_player(cq.from_user.id)
+    options = [0, 1, 2, 3, 4]
+    probabilities = [0.4, 0.3, 0.2, 0.09, 0.01]
+    enemy_id = random.choices(options, probabilities)[0]
+    enemy = mobs[player["location_id"][enemy_id]
+    enemy_name = enemy['name']
+    battle_markup = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [InlineKeyboardButton("Estimate 🧮", callback_data="check")],
+            [InlineKeyboardButton("Attack 🗡️", callback_data="attack")],
+            [InlineKeyboardButton("Drink The Potion ⚱️", callback_data="heal")]
+    ])
+    await cq.edit_message_text(f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
+                                reply_markup=battle_markup)
+    await create_battle(cq.from_user.id, enemy, cq)
 
