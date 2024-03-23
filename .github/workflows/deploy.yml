@@ -25,4 +25,4 @@ jobs:
         pip install -r requirements.txt
 
     - name: Run Rpg Game
-      run: python3 -m bot
+      run: python3 -m Aasf
