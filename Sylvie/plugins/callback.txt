@@ -1,0 +1,226 @@
+from pyrogram import *
+from pyrogram.types import *
+
+from Sylvie import *
+from Sylvie.Database import *
+
+# stats callback
+@app.on_callback_query(filters.regex("stats"))
+async def stats_cq(_, cq):
+    user_id = int(cq.data.split("_")[1])
+    if not cq.from_user.id == user_id:
+        return await cq.answer("This Wasn't Requested By You")
+    else:
+        inv_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Inventory 💼", callback_data=f"inventory_{cq.from_user.id}")]])
+        player = await get_player(cq.from_user.id)
+        name = player['name']
+        level = player['level'] 
+        hp = player['hp'] 
+        cur_hp = player['cur_hp']
+        attack = player['attack']
+        m_attack = player['magic_attack']
+        armour = player['armour']
+        m_armour = player['magic_armour']
+        xp = player['xp']
+        balance = player['money']
+        stats_text = "**👤 Your Character's Statistics:**\n\n"
+        stats_text += f"**Name:** `{name}`\n\n"
+        stats_text += f"**Level:** `{level}` (`{level*10 - exp}` **To Next Level**)\n\n"
+        stats_text += f"**Health:** `{cur_hp}`/`{hp}`\n\n"
+        stats_text += f"**Attack:** `{attack}` ⚔️  `{m_attack}` 🪄\n\n"
+        stats_text += f"**Defense:** `{armour}` 🛡️  `{m_armour}` 🔮\n\n"
+        stats_text += f"**Balance:** `{balance}` 💎\n\n"
+        await cq.edit_message_text(stats_text, reply_markup=inv_markup, parse_mode=enums.ParseMode.MARKDOWN)
+
+# shop callback
+@app.on_callback_query(filters.regex("close"))
+async def close_cq(client: Client, cq: CallbackQuery):
+    user_id = int(cq.data.split("_")[1])
+    if cq.from_user.id == user_id:
+        await cq.message.delete()
+    else:
+        await cq.answer("This Wasn't Requested By You")
+
+@app.on_callback_query(filters.regex("buy"))
+async def buy_cq(client: Client, cq: CallbackQuery):
+    user_id = int(cq.data.split("_")[1])
+    item_id = int(cq.data.split("_")[2])
+    back_reply = InlineKeyboardButton("Back 🔙", callback_data=f"backshop_{user_id}")
+    back_shop = InlineKeyboardMarkup([[back_reply]])
+    if cq.from_user.id == user_id:
+        player = await get_player(cq.from_user.id)
+        item = await items.get(item_id)
+        if player['money'] < item['cost']:
+            await cq.message.edit_text("`Not Enough Coins.`", reply_markup=back_shop, parse_mode=enums.ParseMode.MARKDOWN)
+        else:
+            player['money'] -= item['cost']
+            await update_player(cq.from_user.id, player)
+            is_already = await get_item(cq.from_user.id, item_id)
+            if not is_already:
+                await add_item(cq.from_user.id, item_id)
+            else:
+                await increase_item(cq.from_user.id, item_id)
+            await cq.message.edit_text(f"**You Bought An Item** `{item['name']}`. **You Now Have Them In Your Inventory** .", reply_markup=back_shop, parse_mode=enums.ParseMode.MARKDOWN)
+
+@app.on_callback_query(filters.regex("show"))
+async def show_items_by_type_cq(client: Client, cq: CallbackQuery):
+    user_id = int(cq.data.split("_")[1])
+    item_type = cq.data.split("_")[2]
+    cur_loc = cq.data.split("_")[3]
+    back_shop = InlineKeyboardButton("Back 🔙", callback_data=f"backshop_{cq.from_user.id}")
+    if cq.from_user.id == user_id:
+        items_list = [item for item in items.values() if item.get("item_type") == str(item_type) and item.get("availability") == int(cur_loc)]
+        if not items_list:
+            await cq.message.edit_text("`No items to show.`", reply_markup=InlineKeyboardMarkup([[back_shop]]))
+        else:
+            buttons = []
+            for item in items_list:
+                buttons.append([
+                    InlineKeyboardButton(f"{item['name']} - {item['cost']} coins", callback_data=f"buy_{user_id}_{item['id']}")
+                ])
+            buttons.append([back_shop])
+            await cq.message.edit_text(f"**Items of type {item_type}:**", reply_markup=InlineKeyboardMarkup(buttons))
+    else:
+        await cq.answer("This Wasn't Requested By You")
+
+@app.on_callback_query(filters.regex("backshop"))
+async def back_shop_cq(client: Client, cq: CallbackQuery):
+    user_id = int(cq.data.split("_")[1])
+    if not cq.from_user.id == user_id:
+        return await cq.answer("This Wasn't Requested By You")
+    else:
+        close_shop = InlineKeyboardButton("Close 🚫", callback_data=f"close_{user_id}")
+        cur_loc = await get_player(cq.from_user.id)['location_id']
+        y = {}
+        for x in items.values():
+            if not x.get("item_type") in y:
+                y[x.get("item_type")] = x.get("item_symbol")
+            else:
+                pass
+
+        type_buttons = [
+            InlineKeyboardButton(
+                f"Buy {item_type[0].capitalize()}{ 's' if item_type[0][-1]!='s' else ''} {item_type[1]}",
+                callback_data=f"show_{user_id}_{item_type[0]}_{cur_loc}"
+            ) for item_type in y.items()
+        ]
+
+        buttons = [type_buttons[i:i+2] for i in range(0, len(type_buttons), 2)]
+        markup = InlineKeyboardMarkup([[button for button in row] for row in buttons])
+        markup.inline_keyboard.append([close_shop])
+        await cq.edit_message_text(
+            "🛒 **Welcome To Shop!**", 
+            reply_markup=markup, 
+            parse_mode=enums.ParseMode.MARKDOWN
+        )
+
+# inventory callback
+@app.on_callback_query(filters.regex("wear"))
+async def wear_cq(_, cq):
+    user_id = int(cq.data.split("_")[1])
+    item_to_wear = int(cq.data.split("_")[2])
+    if not cq.from_user.id == user_id:
+        return await cq.answer("This Wasn't Requested By You.")
+    else:
+        back_inv = InlineKeyboardMarkup([[InlineKeyboardButton("Back 🔙", callback_data=f"inventory_{cq.from_user.id}")]])
+        player = await get_player(cq.from_user.id)
+        item_to_wear_inst = items.get(item_to_wear)
+        if item_to_wear_inst['req_level'] > player['level']:
+            return await cq.edit_message_text(f"`You Are Too Small To Wear This Item.`",
+                                        reply_markup=back_inv)
+        else:
+            player_inv = await get_inventory(cq.from_user.id)
+            for item in player_inv:
+                if item['item_id'] == item_to_wear:
+                    found_item = await get_item(cq.from_user.id, item['item_id'])
+                    if not found_item['quantity'] == 0:
+                        found_item_inst = items.get(item_to_wear)
+                        found_item['quantity'] -= 1
+                        player['hp'] += found_item_inst['hp']
+                        player['attack'] += found_item_inst['attack']
+                        player['magic_attack'] += found_item_inst['magic_attack']
+                        player['armour'] += found_item_inst['armour']
+                        player['magic_armour'] += found_item_inst['magic_armour']
+                        await update_player(cq.from_user.id, player)
+                        await update_inventory(cq.from_user.id, item_to_sell, item_in_inv)
+                        return await cq.edit_message_text(f"**You Put On** `{(items.get(item_to_wear))['name']}`.",
+                                                    reply_markup=back_inv)
+                    else:
+                        return await cq.edit_message_text("`You Don't Have This Item In Your Inventory.`",
+                                                    reply_markup=back_inv)
+            if not found_item:
+                return await cq.edit_message_text("`You Don't Have This Item In Your Inventory.`",
+                                            reply_markup=back_inv)
+
+@app.on_callback_query(filters.regex("sell"))
+async def sell(_, cq):
+    player_id = int(cq.data.split("_")[1])
+    item_to_sell = int(cq.data.split("_")[2])
+    if not cq.from_user.id == player_id:
+        return await cq.answer("This Wasn't Requested By You")
+    else:
+        after_deal_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back 🔙", callback_data=f"inventory_{cq.from_user.id}")]])
+        item_in_inv = await get_item(cq.from_user.id, item_to_sell)
+        if not item_in_inv:
+            return await cq.answer("You Don't Have This Item")
+        item_in_inv['quantity'] -= 1
+        player = await get_player(cq.from_user.id)
+        item_cost = items.get(item_to_sell)
+        player['money'] += item_cost['sell_cost']
+        await update_player(cq.from_user.id, player)
+        await update_inventory(cq.from_user.id, item_to_sell, item_in_inv)
+        await cq.edit_message_text(f"**You Sold** `{item_cost['name']}` **And Got** `{item_cost['sell_cost']}`",
+                                    reply_markup=after_deal_markup, parse_mode=enums.ParseMode.MARKDOWN)
+@app.on_callback_query(filters.regex("inventory"))
+async def inventory_cq(_, cq):
+    player_id = int(cq.data.split("_")[1])
+    if not cq.from_user.id == player_id:
+        return await cq.answer("This Wasn't Requested By You")
+    else:
+        stats_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back 🔙", callback_data=f"stats_{cq.from_user.id}")]])
+        cur_inv = await get_inventory(cq.from_user.id)
+        if not cur_inv:
+            return await cq.edit_message_text("`No Inventory Found`")
+        else:
+            inventory_markup = []
+            text = ""
+            num = 0
+            row_buttons = []
+            for item in cur_inv:
+                item_doc = items.get(int(item['item_id']))
+                name = item_doc['name']
+                quantity = item['quantity']
+                item_type = item_doc['item_type']
+                if not quantity == 0:
+                    if item_type == 'potion':
+                        row_buttons.append(InlineKeyboardButton(
+                            f"Sell {name} ({item_doc['sell_cost']} 💎)",
+                            callback_data=f"sell_{cq.from_user.id}_{int(item['item_id'])}"))
+                        inventory_markup.append(row_buttons)
+                        row_buttons = []
+                        num += 1
+                        text += "`{}`. `{}` ×`{}` (**`{}/{}`**)**\n".format(num, name, abs(quantity), item_doc['cost'], item_doc['sell_cost'])
+                    else:
+                        row_buttons.append(InlineKeyboardButton(
+                            f"Sell {name} ({item_doc['sell_cost']} 💎)",
+                            callback_data=f"sell_{cq.from_user.id}_{int(item['item_id'])}"))
+                        row_buttons.append(InlineKeyboardButton(
+                             f"Wear {name} {item_doc['item_symbol']}",
+                             callback_data=f"wear_{cq.from_user.id}_{item['item_id']}"))
+                        if len(row_buttons) == 2:
+                            inventory_markup.append(row_buttons)
+                            row_buttons = []
+                        num += 1
+                        text += "`{}`. `{}` ×`{}` (**`{}/{}`**)**\n".format(num, name, abs(quantity), item_doc['cost'], item_doc['sell_cost'])
+            if row_buttons:
+                inventory_markup.append(row_buttons)
+            inventory_markup.append([InlineKeyboardButton(
+                f"Statistics ✨",
+                callback_data=f"stats_{cq.from_user.id}")])
+            if not text:
+                return await cq.edit_message_text("`Your Inventory Is Empty`", reply_markup=stats_markup)
+            await cq.edit_message_text(
+                "**Your Inventory:**\n\n" + "{}".format(text),
+                reply_markup=InlineKeyboardMarkup(inventory_markup),
+                parse_mode=enums.ParseMode.MARKDOWN
+            )
