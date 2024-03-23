@@ -6,10 +6,10 @@ from config import *
 
 app = Client(
     "Sylvie",
-    api_id=API_ID,
-    api_hash=API_HASH,
-    bot_token=BOT_TOKEN
+    api_id="",
+    api_hash="",
+    bot_token=""
 )
 app.start()
-async_mongo_client = async_mongo(MONGO_URI)
+async_mongo_client = async_mongo("mongodb+srv://Aasf:<password>@aasf.ere7cca.mongodb.net/?retryWrites=true&w=majority&appName=Aasf")
 db = async_mongo_client.Sylvie
