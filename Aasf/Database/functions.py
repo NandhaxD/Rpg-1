@@ -67,7 +67,7 @@ async def get_map(message):
                     back_location = InlineKeyboardButton("Back 🔙", callback_data="back_dungeon")
                 choose_location_markup.append([InlineKeyboardButton(f"Go: {el['location_name']} 🚶‍♂️", callback_data=f"go_{el['location_id']}")])
                 choose_location_markup.append([back_location])
-    await app.send_message(message.message.chat.id, text=text, reply_markup=choose_location_markup, parse_mode=enums.ParseMode.MARKDOWN)
+    await app.send_message(message.message.chat.id, text=text, reply_markup=Inlinekeyboardmarkup(choose_location_markup), parse_mode=enums.ParseMode.MARKDOWN)
 
 @app.on_callback_query(filters.regex("go"))
 async def gogo(_, cq):
