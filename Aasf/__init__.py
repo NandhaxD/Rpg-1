@@ -10,5 +10,5 @@ app = Client(
     bot_token="6690815586:AAFdkuqgTo2EHlkXlid9HBC2hnsW0flVsDU"
 )
 app.start()
-async_mongo_client = async_mongo("mongodb+srv://Aasf:Aasf@aasf.ere7cca.mongodb.net/?retryWrites=true&w=majority&appName=Aasf")
+async_mongo_client = async_mongo("mongodb+srv://jinn1:jinn1@cluster0.iug55ex.mongodb.net/?retryWrites=true&w=majority")
 db = async_mongo_client.Aasf
