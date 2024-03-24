@@ -16,6 +16,7 @@ async def main():
         format=FORMAT,
         datefmt="[%X]",
     )
+    logging.getLogger("pyrogram").setLevel(logging.INFO)
     for module in ALL_MODULES:
       importlib.import_module("Aasf.plugins." + module)
     await idle()
