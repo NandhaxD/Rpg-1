@@ -1,5 +1,5 @@
-from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from pyrogram import *
+from pyrogram.types import *
 
 from Aasf import app
 from Aasf.Database import get_player, create_player, get_location 
