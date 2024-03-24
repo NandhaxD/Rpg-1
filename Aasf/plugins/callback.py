@@ -286,7 +286,7 @@ async def edungeon_cq(_, cq):
             [InlineKeyboardButton("Drink The Potion ⚱️", callback_data="heal")]
     ])
     await cq.message.delete()
-    await app.send_photo(photo=enemy["mob_img"], caption=f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
+    await app.send_photo(cq.message.chat.id, photo=enemy["mob_img"], caption=f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
                                 reply_markup=battle_markup)
     await create_battle(cq.from_user.id, enemy, probabilities, cq)
 
