@@ -264,7 +264,7 @@ async def check_cq(_, cq):
         [InlineKeyboardButton("Attack", callback_data="attack")]
     ])
 
-    await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}/{mobs[await get_key(enemy['name'])][battle['probability']]}`\n" + f"**Attack:** `{enemy['attack']}` {'⚔️' if enemy['attack_type'] == 'phys' else '🪄'}\n" + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
+    await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}/{mobs.get(await get_key(enemy['name']))[battle['probability']]}`\n" + f"**Attack:** `{enemy['attack']}` {'⚔️' if enemy['attack_type'] == 'phys' else '🪄'}\n" + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
                                 reply_markup=check_markup, parse_mode=enums.ParseMode.MARKDOWN)
 
 
@@ -276,7 +276,8 @@ async def edungeon_cq(_, cq):
     enemy_id = random.choices(options, probabilities)[0]
     one = int(player["location_id"])
     two = int(enemy_id)
-    enemy = mobs[[one][two]]
+    enem = mobs.get(one)
+    enemy = enem[two]
     enemy_name = enemy['name']
     battle_markup = InlineKeyboardMarkup(
         inline_keyboard=[
