@@ -1,4 +1,5 @@
 motor
+apscheduler
 pymongo
 pyrogram
 tgcrypto
