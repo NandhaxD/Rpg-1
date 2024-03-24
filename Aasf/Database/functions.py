@@ -2,7 +2,8 @@ import asyncio
 from math import floor
 
 from Aasf import app
-from Aasf.Database import get_player, update_player, get_location
+from Aasf.Database.playerdb import *
+from Aasf.Database.locationdb import *
 
 from pyrogram import *
 from pyrogram.types import * 
