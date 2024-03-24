@@ -56,7 +56,7 @@ async def get_map(message):
     cur_town_y = cur_town['y_coord']
     text = "**Available Locations:**\n\n"
     choose_location_markup = []
-    async for el in locations.values():
+    for el in locations.values():
         if el["location_id"] != player['location_id']:
             dist = round(count_distance(cur_town_x, cur_town_y, el['x_coord'], el['y_coord']))
             if 0 < dist <= 10:
