@@ -7,7 +7,7 @@ from Aasf.Database import get_player, items
 @app.on_message(filters.command("shop"))
 async def shop(client: Client, message: Message):
     close_shop = InlineKeyboardButton("Close 🚫", callback_data=f"close_{message.from_user.id}")
-    cur_loc = await get_player(message.from_user.id)['location_id']
+    cur_loc = (await get_player(message.from_user.id))['location_id']
     y = {}
     for x in items.values():
         if not x.get("item_type") in y:
