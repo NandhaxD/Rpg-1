@@ -274,7 +274,9 @@ async def edungeon_cq(_, cq):
     options = [0, 1, 2, 3, 4]
     probabilities = [0.4, 0.3, 0.2, 0.09, 0.01]
     enemy_id = random.choices(options, probabilities)[0]
-    enemy = mobs[int(player["location_id"])[int(enemy_id)]]
+    one = int(player["location_id"])
+    two = int(enemy_id)
+    enemy = mobs[[one][two]]
     enemy_name = enemy['name']
     battle_markup = InlineKeyboardMarkup(
         inline_keyboard=[
