@@ -265,7 +265,7 @@ async def check_cq(_, cq):
     ])
 
     await cq.edit_message_text(f"**{enemy['name']}**:\n\n" +
-                                f"**Health:** `{enemy['hp']}/{(mobs.get(get_key(enemy['name'], mobs))[battle['probability']])['hp']}`\n" +
+                                f"**Health:** `{enemy['hp']}/{(get_mob(enemy['name'], mobs))[battle['enemy_id']]['hp']}`\n" +
                                 f"**Attack:** `{enemy['attack']}` {'⚔️' if enemy['attack_type'] == 'phys' else '🪄'}\n" +
                                 f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
                                 reply_markup=check_markup, parse_mode=enums.ParseMode.MARKDOWN)
