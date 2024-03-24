@@ -2,24 +2,13 @@ import asyncio
 from math import floor
 
 from Aasf import app
-from Aasf.Database import *
+from Aasf.Database import get_player, update_player, get_location
 
 from pyrogram import *
 from pyrogram.types import * 
 
 def count_distance(x1, y1, x2, y2):
     return ((x1 - x2) ** 2 + (y1 - y2) ** 2) ** (1 / 2)
-    
-async def go_loc(user_id, loc_id, cq):
-    player = await get_player(user_id)
-    player['location_id'] = loc_id
-    await update_player(user_id, player)
-    if loc_id > 0:
-        cur_place = await get_location(loc_id)
-        if cur_place['location_type'] == "town":
-            await get_town(cq)
-        elif cur_place['location_type'] == "dungeon":
-            await get_dungeon(cq)
 
 async def get_town(message):
     player = await get_player(message.from_user.id)
@@ -47,6 +36,17 @@ async def get_dungeon(message):
     await app.edit_message_text(chat_id=message.chat.id, message_id=message.id,
                                 text=f"`You Are In The Dungeon:` **⛰️ {cur_dungeon['location_name']}**", reply_markup=dungeon_gate_markup,
                                 parse_mode=enums.ParseMode.MARKDOWN)
+    
+async def go_loc(user_id, loc_id, cq):
+    player = await get_player(user_id)
+    player['location_id'] = loc_id
+    await update_player(user_id, player)
+    if loc_id > 0:
+        cur_place = await get_location(loc_id)
+        if cur_place['location_type'] == "town":
+            await get_town(cq)
+        elif cur_place['location_type'] == "dungeon":
+            await get_dungeon(cq)
 
 async def get_map(message):
     player = await get_player(message.from_user.id)
