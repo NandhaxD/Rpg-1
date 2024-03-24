@@ -23,4 +23,4 @@ if __name__ == "__main__":
     idle()
 
 while True:
-    await check_inactive_users(app)
+    asyncio.run(check_inactive_users(app))
