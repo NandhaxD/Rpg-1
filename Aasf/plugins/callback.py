@@ -52,7 +52,7 @@ async def buy_cq(client: Client, cq: CallbackQuery):
     back_shop = InlineKeyboardMarkup([[back_reply]])
     if cq.from_user.id == user_id:
         player = await get_player(cq.from_user.id)
-        item = await items.get(item_id)
+        item = items.get(item_id)
         if player['money'] < item['cost']:
             await cq.message.edit_text("`Not Enough Coins.`", reply_markup=back_shop, parse_mode=enums.ParseMode.MARKDOWN)
         else:
