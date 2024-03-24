@@ -9,7 +9,7 @@ locations = {
     1: {"location_name": "Adventurer's Guild", "x_coord": 0, "y_coord": 0, "location_type": "town", "location_id": 1, "req_level": 1}
 }
 
-def get_location(loc_id: int):
+async def get_location(loc_id: int):
     location = locations.get(loc_id)
     if location:
         return location
