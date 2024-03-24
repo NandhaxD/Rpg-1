@@ -93,7 +93,7 @@ async def back_shop_cq(client: Client, cq: CallbackQuery):
         return await cq.answer("This Wasn't Requested By You")
     else:
         close_shop = InlineKeyboardButton("Close 🚫", callback_data=f"close_{user_id}")
-        cur_loc = await get_player(cq.from_user.id)['location_id']
+        cur_loc = (await get_player(cq.from_user.id))['location_id']
         y = {}
         for x in items.values():
             if not x.get("item_type") in y:
@@ -232,8 +232,8 @@ async def inventory_cq(_, cq):
 @app.on_callback_query(filters.regex("back_town"))
 async def btown_cq(_, cq):
     user_id = int(cq.data.split("_")[1])
-    cur_loc = await get_player(user_id)["location_id"]
-    if (await get_location(cur_loc)["location_type"]) == "dungeon":
+    cur_loc = (await get_player(user_id))["location_id"]
+    if ((await get_location(cur_loc))["location_type"]) == "dungeon":
         await get_dungeon(cq)
     else:
         await get_town(cq)
