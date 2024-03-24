@@ -49,38 +49,38 @@ items = {
 # mobs
 mobs = {
 1: [
-    {"mob_name": "Goblin", "mob_img": "https://graph.org/file/f786d797e884441edf5be.jpg", "hp": 15, "exp": 20, "money": 10, "req_level": 1, "attack_type": "phys", "attack": 3, "armour": 1, "magic_armour": 0},
-    {"mob_name": "Slime", "mob_img": "https://graph.org/file/9dc1ae4629bee38d70ede.jpg", "hp": 10, "exp": 15, "money": 5, "req_level": 1, "attack_type": "magic", "attack": 2, "armour": 0, "magic_armour": 2},
-    {"mob_name": "Harpy", "mob_img": "https://graph.org/file/65623978721a8642ad45a.jpg", "hp": 20, "exp": 30, "money": 15, "req_level": 2, "attack_type": "phys", "attack": 4, "armour": 2, "magic_armour": 1},
-    {"mob_name": "Troll", "mob_img": "https://graph.org/file/9760cb22bc2a830791806.jpg", "hp": 30, "exp": 40, "money": 20, "req_level": 3, "attack_type": "phys", "attack": 5, "armour": 3, "magic_armour": 0},
-    {"mob_name": "Dragon", "mob_img": "https://graph.org/file/7386dadc8a32de7baa03c.jpg", "hp": 50, "exp": 60, "money": 30, "req_level": 5, "attack_type": "magic", "attack": 8, "armour": 5, "magic_armour": 5}
+    {"name": "Goblin", "mob_img": "https://graph.org/file/f786d797e884441edf5be.jpg", "hp": 15, "exp": 20, "money": 10, "req_level": 1, "attack_type": "phys", "attack": 3, "armour": 1, "magic_armour": 0},
+    {"name": "Slime", "mob_img": "https://graph.org/file/9dc1ae4629bee38d70ede.jpg", "hp": 10, "exp": 15, "money": 5, "req_level": 1, "attack_type": "magic", "attack": 2, "armour": 0, "magic_armour": 2},
+    {"name": "Harpy", "mob_img": "https://graph.org/file/65623978721a8642ad45a.jpg", "hp": 20, "exp": 30, "money": 15, "req_level": 2, "attack_type": "phys", "attack": 4, "armour": 2, "magic_armour": 1},
+    {"name": "Troll", "mob_img": "https://graph.org/file/9760cb22bc2a830791806.jpg", "hp": 30, "exp": 40, "money": 20, "req_level": 3, "attack_type": "phys", "attack": 5, "armour": 3, "magic_armour": 0},
+    {"name": "Dragon", "mob_img": "https://graph.org/file/7386dadc8a32de7baa03c.jpg", "hp": 50, "exp": 60, "money": 30, "req_level": 5, "attack_type": "magic", "attack": 8, "armour": 5, "magic_armour": 5}
 ],
 2: [
-    {"mob_name": "Mummy", "mob_img": "https://graph.org/file/47c5143da006c8a35e426.jpg", "hp": 20, "exp": 30, "money": 15, "req_level": 3, "attack_type": "phys", "attack": 4, "armour": 2, "magic_armour": 2},
-    {"mob_name": "Scarab", "mob_img": "https://graph.org/file/3ea972dcd3580abebd77b.jpg", "hp": 15, "exp": 20, "money": 10, "req_level": 2, "attack_type": "phys", "attack": 3, "armour": 1, "magic_armour": 1},
-    {"mob_name": "Gargoyle", "mob_img": "https://graph.org/file/4937c9ce70b8285e32662.jpg", "hp": 30, "exp": 40, "money": 20, "req_level": 4, "attack_type": "phys", "attack": 5, "armour": 3, "magic_armour": 0},
-    {"mob_name": "Skeleton Mage", "mob_img": "https://graph.org/file/d232ed318bef13c4b197d.jpg", "hp": 25, "exp": 35, "money": 18, "req_level": 3, "attack_type": "magic", "attack": 5, "armour": 0, "magic_armour": 3},
-    {"mob_name": "Ancient Golem", "mob_img": "https://graph.org/file/097edf0a9ee5c0c9b09d2.jpg", "hp": 50, "exp": 60, "money": 30, "req_level": 5, "attack_type": "phys", "attack": 7, "armour": 5, "magic_armour": 5}
+    {"name": "Mummy", "mob_img": "https://graph.org/file/47c5143da006c8a35e426.jpg", "hp": 20, "exp": 30, "money": 15, "req_level": 3, "attack_type": "phys", "attack": 4, "armour": 2, "magic_armour": 2},
+    {"name": "Scarab", "mob_img": "https://graph.org/file/3ea972dcd3580abebd77b.jpg", "hp": 15, "exp": 20, "money": 10, "req_level": 2, "attack_type": "phys", "attack": 3, "armour": 1, "magic_armour": 1},
+    {"name": "Gargoyle", "mob_img": "https://graph.org/file/4937c9ce70b8285e32662.jpg", "hp": 30, "exp": 40, "money": 20, "req_level": 4, "attack_type": "phys", "attack": 5, "armour": 3, "magic_armour": 0},
+    {"name": "Skeleton Mage", "mob_img": "https://graph.org/file/d232ed318bef13c4b197d.jpg", "hp": 25, "exp": 35, "money": 18, "req_level": 3, "attack_type": "magic", "attack": 5, "armour": 0, "magic_armour": 3},
+    {"name": "Ancient Golem", "mob_img": "https://graph.org/file/097edf0a9ee5c0c9b09d2.jpg", "hp": 50, "exp": 60, "money": 30, "req_level": 5, "attack_type": "phys", "attack": 7, "armour": 5, "magic_armour": 5}
 ],
 3: [
-    {"mob_name": "Forest Spirit", "mob_img": "https://telegra.ph/file/69d0090b00336cc5b342f.jpg", "hp": 35, "exp": 50, "money": 25, "req_level": 5, "attack_type": "magic", "attack": 6, "armour": 2, "magic_armour": 4},
-    {"mob_name": "Thorned Vine", "mob_img": "https://telegra.ph/file/1a00a413c2866cc42e763.jpg", "hp": 40, "exp": 45, "money": 20, "req_level": 4, "attack_type": "phys", "attack": 4, "armour": 4, "magic_armour": 2},
-    {"mob_name": "Giant Toad", "mob_img": "https://telegra.ph/file/9c5918b899c5b7c703283.jpg", "hp": 45, "exp": 55, "money": 22, "req_level": 5, "attack_type": "phys", "attack": 5, "armour": 3, "magic_armour": 1},
-    {"mob_name": "Cursed Tree", "mob_img": "https://telegra.ph/file/51e4d3cfce551c4d32bc2.jpg", "hp": 60, "exp": 70, "money": 35, "req_level": 6, "attack_type": "magic", "attack": 7, "armour": 2, "magic_armour": 6},
-    {"mob_name": "Enchanted Wolf", "mob_img": "https://telegra.ph/file/3ffaa90def746273e5a9e.jpg", "hp": 50, "exp": 60, "money": 30, "req_level": 6, "attack_type": "phys", "attack": 7, "armour": 4, "magic_armour": 2}
+    {"name": "Forest Spirit", "mob_img": "https://telegra.ph/file/69d0090b00336cc5b342f.jpg", "hp": 35, "exp": 50, "money": 25, "req_level": 5, "attack_type": "magic", "attack": 6, "armour": 2, "magic_armour": 4},
+    {"name": "Thorned Vine", "mob_img": "https://telegra.ph/file/1a00a413c2866cc42e763.jpg", "hp": 40, "exp": 45, "money": 20, "req_level": 4, "attack_type": "phys", "attack": 4, "armour": 4, "magic_armour": 2},
+    {"name": "Giant Toad", "mob_img": "https://telegra.ph/file/9c5918b899c5b7c703283.jpg", "hp": 45, "exp": 55, "money": 22, "req_level": 5, "attack_type": "phys", "attack": 5, "armour": 3, "magic_armour": 1},
+    {"name": "Cursed Tree", "mob_img": "https://telegra.ph/file/51e4d3cfce551c4d32bc2.jpg", "hp": 60, "exp": 70, "money": 35, "req_level": 6, "attack_type": "magic", "attack": 7, "armour": 2, "magic_armour": 6},
+    {"name": "Enchanted Wolf", "mob_img": "https://telegra.ph/file/3ffaa90def746273e5a9e.jpg", "hp": 50, "exp": 60, "money": 30, "req_level": 6, "attack_type": "phys", "attack": 7, "armour": 4, "magic_armour": 2}
 ],
 4: [
-    {"mob_name": "Dragonling", "mob_img": "https://telegra.ph/file/9c6d3663ca65f8c44a0a2.jpg", "hp": 70, "exp": 100, "money": 50, "req_level": 7, "attack_type": "magic", "attack": 10, "armour": 6, "magic_armour": 8},
-    {"mob_name": "Fire Elemental", "mob_img": "https://telegra.ph/file/9e9fcedd9c2f2f8c80203.jpg", "hp": 60, "exp": 80, "money": 40, "req_level": 8, "attack_type": "magic", "attack": 12, "armour": 4, "magic_armour": 10},
-    {"mob_name": "Armored Drake", "mob_img": "https://telegra.ph/file/8c9b0e3eefcde68e232a8.jpg", "hp": 80, "exp": 120, "money": 60, "req_level": 9, "attack_type": "phys", "attack": 12, "armour": 10, "magic_armour": 4},
-    {"mob_name": "Dragon's Spawn", "mob_img": "https://telegra.ph/file/4e02024f9eb1944d4c5a5.jpg", "hp": 90, "exp": 140, "money": 70, "req_level": 10, "attack_type": "phys", "attack": 14, "armour": 8, "magic_armour": 6},
-    {"mob_name": "Dragon Priest", "mob_img": "https://telegra.ph/file/bc82cf65e0fa9c27fc17d.jpg", "hp": 100, "exp": 160, "money": 80, "req_level": 11, "attack_type": "magic", "attack": 14, "armour": 6, "magic_armour": 12}
+    {"name": "Dragonling", "mob_img": "https://telegra.ph/file/9c6d3663ca65f8c44a0a2.jpg", "hp": 70, "exp": 100, "money": 50, "req_level": 7, "attack_type": "magic", "attack": 10, "armour": 6, "magic_armour": 8},
+    {"name": "Fire Elemental", "mob_img": "https://telegra.ph/file/9e9fcedd9c2f2f8c80203.jpg", "hp": 60, "exp": 80, "money": 40, "req_level": 8, "attack_type": "magic", "attack": 12, "armour": 4, "magic_armour": 10},
+    {"name": "Armored Drake", "mob_img": "https://telegra.ph/file/8c9b0e3eefcde68e232a8.jpg", "hp": 80, "exp": 120, "money": 60, "req_level": 9, "attack_type": "phys", "attack": 12, "armour": 10, "magic_armour": 4},
+    {"name": "Dragon's Spawn", "mob_img": "https://telegra.ph/file/4e02024f9eb1944d4c5a5.jpg", "hp": 90, "exp": 140, "money": 70, "req_level": 10, "attack_type": "phys", "attack": 14, "armour": 8, "magic_armour": 6},
+    {"name": "Dragon Priest", "mob_img": "https://telegra.ph/file/bc82cf65e0fa9c27fc17d.jpg", "hp": 100, "exp": 160, "money": 80, "req_level": 11, "attack_type": "magic", "attack": 14, "armour": 6, "magic_armour": 12}
 ],
 5: [
-    {"mob_name": "Elemental Apprentice", "mob_img": "https://telegra.ph/file/3f245cbef1e3d48cb9768.jpg", "hp": 60, "exp": 80, "money": 40, "req_level": 10, "attack_type": "magic", "attack": 10, "armour": 4, "magic_armour": 8},
-    {"mob_name": "Golem Guardian", "mob_img": "https://telegra.ph/file/6f9d6f5e6c5db2d4bb71b.jpg", "hp": 70, "exp": 100, "money": 50, "req_level": 11, "attack_type": "phys", "attack": 12, "armour": 10, "magic_armour": 4},
-    {"mob_name": "Necromancer Acolyte", "mob_img": "https://telegra.ph/file/007306f89155ec3b69a0d.jpg", "hp": 80, "exp": 120, "money": 60, "req_level": 12, "attack_type": "magic", "attack": 12, "armour": 6, "magic_armour": 10},
-    {"mob_name": "Enchanted Book", "mob_img": "https://telegra.ph/file/0d18d9f21c3f0cd3c63dd.jpg", "hp": 50, "exp": 60, "money": 30, "req_level": 13, "attack_type": "magic", "attack": 8, "armour": 2, "magic_armour": 6},
-    {"mob_name": "Arcane Apprentice", "mob_img": "https://telegra.ph/file/131f0c1d6a3a0197e3c2e.jpg", "hp": 90, "exp": 140, "money": 70, "req_level": 14, "attack_type": "magic", "attack": 14, "armour": 4, "magic_armour": 12}
+    {"name": "Elemental Apprentice", "mob_img": "https://telegra.ph/file/3f245cbef1e3d48cb9768.jpg", "hp": 60, "exp": 80, "money": 40, "req_level": 10, "attack_type": "magic", "attack": 10, "armour": 4, "magic_armour": 8},
+    {"name": "Golem Guardian", "mob_img": "https://telegra.ph/file/6f9d6f5e6c5db2d4bb71b.jpg", "hp": 70, "exp": 100, "money": 50, "req_level": 11, "attack_type": "phys", "attack": 12, "armour": 10, "magic_armour": 4},
+    {"name": "Necromancer Acolyte", "mob_img": "https://telegra.ph/file/007306f89155ec3b69a0d.jpg", "hp": 80, "exp": 120, "money": 60, "req_level": 12, "attack_type": "magic", "attack": 12, "armour": 6, "magic_armour": 10},
+    {"name": "Enchanted Book", "mob_img": "https://telegra.ph/file/0d18d9f21c3f0cd3c63dd.jpg", "hp": 50, "exp": 60, "money": 30, "req_level": 13, "attack_type": "magic", "attack": 8, "armour": 2, "magic_armour": 6},
+    {"name": "Arcane Apprentice", "mob_img": "https://telegra.ph/file/131f0c1d6a3a0197e3c2e.jpg", "hp": 90, "exp": 140, "money": 70, "req_level": 14, "attack_type": "magic", "attack": 14, "armour": 4, "magic_armour": 12}
 ]
 }
