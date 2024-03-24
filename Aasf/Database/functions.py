@@ -3,7 +3,7 @@ from math import floor
 
 from Aasf import app
 from Aasf.Database.playerdb import *
-from Aasf.Database import get_location
+from Aasf.Database.__init__ import get_location
 
 from pyrogram import *
 from pyrogram.types import * 
