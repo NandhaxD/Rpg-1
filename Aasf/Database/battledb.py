@@ -1,9 +1,11 @@
 import time
+import asyncio 
 import random
 import datetime
 
 from pyrogram import Client
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.errors import FloodWait
 
 from Aasf import app, db
 
@@ -50,11 +52,24 @@ async def end_battle(user_id: int):
 
 async def check_inactive_users(app):
     async for x in db.battle.find():
-        if time.time() - float(x["time"]) > 60:
-            death_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Be Reborn 💞", callback_data="revive")]])
-            await app.edit_message.text(chat_id=x["player"],
-                                        message_id=x["message_id"],
-                                        text="`You Fell Asleep On The Battlefield And Became An Easy Target For The Enemy.`\n\n **You Perished! :(**",
-                                        reply_markup=death_markup,
-                                        parse_mode=enums.ParseMode.MARKDOWN)
-            await end_battle(x["player"])
+        try:
+            time_float = float(x["time"])
+            if time.time() - time_float > 60:
+                death_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Be Reborn 💞", callback_data="revive")]])
+                await app.edit_message.text(chat_id=x["player"],
+                                            message_id=x["message_id"],
+                                            text=f"`You Fell Asleep On The Battlefield And Became An Easy Target For The Enemy.`\n\n**You Perished! :(**",
+                                            reply_markup=death_markup,
+                                            parse_mode=enums.ParseMode.MARKDOWN)
+                await end_battle(x["player"])
+                await asyncio.sleep(0.1)
+
+        except ValueError as e:
+            print(e)
+
+        except FloodWait as e:
+            print(e)
+            await asyncio.sleep(e.value)
+
+        except Exception as e:
+            print(e)
