@@ -264,9 +264,11 @@ async def check_cq(_, cq):
         [InlineKeyboardButton("Attack", callback_data="attack")]
     ])
 
-    await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}/{(mobs.get(get_key(enemy['name'], mobs))[battle['probability']])["hp"]}`\n" + f"**Attack:** `{enemy['attack']}` {'⚔️' if enemy['attack_type'] == 'phys' else '🪄'}\n" + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
+    await cq.edit_message_text(f"**{enemy['name']}**:\n\n" +
+                                f"**Health:** `{enemy['hp']}/{(mobs.get(get_key(enemy['name'], mobs))[battle['probability']])['hp']}`\n" +
+                                f"**Attack:** `{enemy['attack']}` {'⚔️' if enemy['attack_type'] == 'phys' else '🪄'}\n" +
+                                f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
                                 reply_markup=check_markup, parse_mode=enums.ParseMode.MARKDOWN)
-
 
 @app.on_callback_query(filters.regex("enter_dungeon"))
 async def edungeon_cq(_, cq):
@@ -288,7 +290,7 @@ async def edungeon_cq(_, cq):
     await cq.message.delete()
     await app.send_photo(cq.message.chat.id, photo=enemy["mob_img"], caption=f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
                                 reply_markup=battle_markup)
-    await create_battle(cq.from_user.id, enemy, probabilities, cq)
+    await create_battle(cq.from_user.id, enemy, enemy_id, cq)
 
 
 @app.on_callback_query(filters.regex("heal"))
@@ -297,7 +299,7 @@ async def heal_cq(_, cq):
     enemy = battle['enemy']
     await update_time(cq.from_user.id)
     player = await get_player(cq.from_user.id)
-    stmt = await update_inventory(cq.from_user.id, 10)
+    stmt = await get_item(cq.from_user.id, 10)
     death_markup = InlineKeyboardMarkup(
                     inline_keyboard=[
                         [InlineKeyboardButton("Be Reborn 💞", callback_data="revive")]
@@ -356,7 +358,7 @@ async def heal_cq(_, cq):
 @app.on_callback_query(filters.regex("attack"))
 async def atck_cq(_, cq):
     await update_time(cq.from_user.id)
-    battle = get_battle(cq.from_user.id)
+    battle = await get_battle(cq.from_user.id)
     enemy = battle["enemy"]
     player = await get_player(cq.from_user.id)
     damage = player['attack'] * 1.5 if random.random() < 0.2 else player['attack']
