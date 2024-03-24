@@ -84,3 +84,10 @@ mobs = {
     {"name": "Arcane Apprentice", "mob_img": "https://telegra.ph/file/131f0c1d6a3a0197e3c2e.jpg", "hp": 90, "exp": 140, "money": 70, "req_level": 14, "attack_type": "magic", "attack": 14, "armour": 4, "magic_armour": 12}
 ]
 }
+
+def get_mob(name, mobs_dict):
+    for key, mobs_list in mobs_dict.items():
+        for mob in mobs_list:
+            if mob['name'] == name:
+                return key
+    return None
