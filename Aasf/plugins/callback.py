@@ -332,11 +332,11 @@ async def heal_cq(_, cq):
         await db.persons.replace_one({'user_id': cq.from_user.id}, player)
         if player['cur_hp'] <= 0:
             await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n**You Perished! :(**",
-                                        reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
+                                        reply_markup=death_markup, parse_mode=enums.ParseMode.MARKDOWN)
             await end_battle(cq.from_user.id)
         else:
             await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n**You Have Left** `{player['cur_hp']}` **Health.**",
-                                        reply_markup=battle_markup, parse_mode=enums.ParseMode.Markdown)
+                                        reply_markup=battle_markup, parse_mode=enums.ParseMode.MARKDOWN)
             await update_time(cq.from_user.id)
     elif enemy['attack_type'] == 'mag':
         enemy_damage = enemy['attack'] * 1.5 if random.random() < 0.2 else enemy['attack']
@@ -401,14 +401,14 @@ async def atck_cq(_, cq):
     else:
         for i in range(0, 4):
              await cq.edit_message_caption(f"{crit}\n**The Enemy Has** `{enemy['hp']}` **Health.**\n\n"
-                                          f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
+                                          f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.MARKDOWN)
              await asyncio.sleep(0.6)
     if enemy['attack_type'] == 'phys':
                 enemy_damage = random.choices([enemy['attack'], enemy['attack'] * 1.5], weights=[0.8, 0.2])[0]
                 player['cur_hp'] -= max((enemy_damage - player['armour']), 0)
                 if player['cur_hp'] <= 0:
                     await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n **You Perished! :(**",
-                                                reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
+                                                reply_markup=death_markup, parse_mode=enums.ParseMode.MARKDOWN)
                     await end_battle(cq.from_user.id)
                 else:
                     await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n"
