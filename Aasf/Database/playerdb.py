@@ -7,7 +7,6 @@ async def get_player(user_id: int):
     else:
         return False
 
-
 async def create_player(user_id: int, name: str):
     player = await get_player(user_id)
     if not player:
@@ -32,7 +31,6 @@ async def create_player(user_id: int, name: str):
     else:
         return False
 
-
 async def delete_player(user_id: int):
     player = await get_player(user_id)
     if player:
@@ -43,7 +41,6 @@ async def delete_player(user_id: int):
             return False
     else:
         return False
-
 
 async def update_player(user_id: int, ply):
     player = await get_player(user_id)
