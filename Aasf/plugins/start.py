@@ -1,26 +1,27 @@
-from pyrogram import *
-from pyrogram.types import *
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from Aasf import app
-from Aasf.Database import *
+from Aasf.Database import get_player, create_player, get_location 
 
 @app.on_message(filters.command("start"))
 async def start(_, message):
     player = await get_player(message.from_user.id)
     town_markup = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton("Leave The City 🚶‍♂️", callback_data="leave_city")],
-        [InlineKeyboardButton("Inventory 💼", callback_data="inventory")],
-        [InlineKeyboardButton("Local Store 🛍️", callback_data="shop")],
-        [InlineKeyboardButton("Character Stats 👤", callback_data="stats")]
-    ])
+        inline_keyboard=[
+            [InlineKeyboardButton("Leave The City 🚶‍♂️", callback_data="leave_city")],
+            [InlineKeyboardButton("Inventory 💼", callback_data="inventory")],
+            [InlineKeyboardButton("Local Store 🛍️", callback_data="shop")],
+            [InlineKeyboardButton("Character Stats 👤", callback_data="stats")]
+        ])
     dungeon_gate_markup = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [InlineKeyboardButton("Enter The Dungeon ⚔️", callback_data="enter_dungeon"), InlineKeyboardButton("Character Stats 👤", callback_data="stats")],
-        [InlineKeyboardButton("Back 🔙", callback_data="leave_city")]
-    ])
+        inline_keyboard=[
+            [InlineKeyboardButton("Enter The Dungeon ⚔️", callback_data="enter_dungeon")],
+            [InlineKeyboardButton("Character Stats 👤", callback_data="stats")],
+            [InlineKeyboardButton("Back 🔙", callback_data="leave_city")]
+        ])
     if not player:
-        name = await message.chat.ask("**Send Me Your Name:**", parse_mode=enums.ParseMode.MARKDOWN)
+        name = await message.chat.ask("**Send Me Your Name:**", filters=filters.text)
         new_player = await create_player(user_id=message.from_user.id, name=name.text)
         cur_loc = await get_location(1)
         await name.sent_message.delete()
