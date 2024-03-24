@@ -2,6 +2,8 @@ from Aasf.Database.battledb import *
 from Aasf.Database.buyandinvdb import *
 from Aasf.Database.functions import get_map, get_town, get_dungeon
 from Aasf.Database.playerdb import *
+from Aasf.Database.chatdb import *
+from Aasf.Database.userdb import *
 from Aasf import *
 
 # locations 
