@@ -51,7 +51,7 @@ async def end_battle(user_id: int):
         return True
 
 async def check_inactive_users(app):
-    for x in db.battle.find():
+    async for x in await db.battle.find():
         try:
             time_float = float(x["time"])
             if time.time() - time_float > 60:
