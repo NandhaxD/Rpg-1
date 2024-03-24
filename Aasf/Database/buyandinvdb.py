@@ -1,12 +1,11 @@
 from Aasf import db
+from pymongo import ReturnDocument
 
 async def add_item(user_id: int, item_id: int):
-    doc = {'player': user_id, 'item_id': item_id, 'quantity': 1}
-    result = await db.inventory.find_one(doc)
-    if not result:
-        result = await db.inventory.insert_one(doc)
-    else:
-        return None
+    filter = {'player': user_id, 'item_id': item_id}
+    update = {'$inc': {'quantity': 1}}
+    result = await db.inventory.find_one_and_update(filter, update, upsert=True, return_document=ReturnDocument.AFTER)
+    return result
 
 async def increase_item(user_id: int, item_id: int):
     filter = {'player': user_id, 'item_id': item_id}
@@ -20,7 +19,7 @@ async def get_item(user_id: int, item_id: int):
     if item:
         return item
     else:
-        return False
+        return None
 
 async def get_inventory(user_id: int):
     user_filter = {'player': user_id}
@@ -32,15 +31,15 @@ async def get_inventory(user_id: int):
     return user_inv
 
 async def update_inventory(user_id: int, item_id: int, inv):
-    inventory = await db.inventory.find_one({'player': user_id, 'item_id': item_id})
-    if inventory:
-        await db.inventory.replace_one({'player': user_id, 'item_id': item_id}, inv)
+    filter = {'player': user_id, 'item_id': item_id}
+    result = await db.inventory.replace_one(filter, inv)
+    if result.modified_count == 1:
         return True
     else:
         return False
-        
+
 def get_key(val, my_dict):
     for key, value in my_dict.items():
         if val == value:
             return key
-    return "key doesn't exist"
+    return None
