@@ -265,7 +265,7 @@ async def check_cq(_, cq):
     ])
 
     await cq.edit_message_text(f"**{enemy['name']}**:\n\n" +
-                                f"**Health:** `{enemy['hp']}/{(get_mob(enemy['name'], mobs))[battle['enemy_id']]['hp']}`\n" +
+                                f"**Health:** `{enemy['hp']}/{(get_mob(enemy['name'], mobs)[battle['enemy_id']])['hp']}`\n" +
                                 f"**Attack:** `{enemy['attack']}` {'⚔️' if enemy['attack_type'] == 'phys' else '🪄'}\n" +
                                 f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
                                 reply_markup=check_markup, parse_mode=enums.ParseMode.MARKDOWN)
@@ -320,11 +320,11 @@ async def heal_cq(_, cq):
         await update_player(cq.from_user.id, stmt1)
         await update_inventory(cq.from_user.id, 10, stmt)
         for i in range(0, 4):
-            await cq.edit_message_caption(f"**You Drank A Health Potion! Restored 5 hp. Current Health:** {stmt1['cur_hp']}\n\n`The Enemy Is attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
+            await cq.edit_message_caption(f"**You Drank A Health Potion! Restored 5 hp. Current Health:** {stmt1['cur_hp']}\n\n`The Enemy Is attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.MARKDOWN)
             await asyncio.sleep(0.6)
     else:
         for i in range(0, 4):
-            await cq.edit_message_caption(f"**You Reached Into Your Backpack For A Potion, But He Wasn''t There!**\n\n`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
+            await cq.edit_message_caption(f"**You Reached Into Your Backpack For A Potion, But He Wasn''t There!**\n\n`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.MARKDOWN)
             await asyncio.sleep(0.6)
     if enemy['attack_type'] == 'phys':
         enemy_damage = random.choices([enemy['attack'], enemy['attack'] * 1.5], weights=[0.8, 0.2])[0]
