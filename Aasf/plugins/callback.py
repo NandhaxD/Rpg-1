@@ -286,7 +286,7 @@ async def edungeon_cq(_, cq):
             [InlineKeyboardButton("Drink The Potion ⚱️", callback_data="heal")]
     ])
     await cq.message.delete()
-    await app.send_photo(enemy["mob_img"], caption=f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
+    await app.send_photo(photo=enemy["mob_img"], caption=f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
                                 reply_markup=battle_markup)
     await create_battle(cq.from_user.id, enemy, probabilities, cq)
 
@@ -318,22 +318,22 @@ async def heal_cq(_, cq):
         await update_player(cq.from_user.id, stmt1)
         await update_inventory(cq.from_user.id, 10, stmt)
         for i in range(0, 4):
-            await cq.edit_message_text(f"**You Drank A Health Potion! Restored 5 hp. Current Health:** {stmt1['cur_hp']}\n\n`The Enemy Is attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
+            await cq.edit_message_caption(f"**You Drank A Health Potion! Restored 5 hp. Current Health:** {stmt1['cur_hp']}\n\n`The Enemy Is attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
             await asyncio.sleep(0.6)
     else:
         for i in range(0, 4):
-            await cq.edit_message_text(f"**You Reached Into Your Backpack For A Potion, But He Wasn''t There!**\n\n`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
+            await cq.edit_message_caption(f"**You Reached Into Your Backpack For A Potion, But He Wasn''t There!**\n\n`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
             await asyncio.sleep(0.6)
     if enemy['attack_type'] == 'phys':
         enemy_damage = random.choices([enemy['attack'], enemy['attack'] * 1.5], weights=[0.8, 0.2])[0]
         player['cur_hp'] -= max((enemy_damage - player['armour']), 0)
         await db.persons.replace_one({'user_id': cq.from_user.id}, player)
         if player['cur_hp'] <= 0:
-            await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n**You Perished! :(**",
+            await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n**You Perished! :(**",
                                         reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
             await end_battle(cq.from_user.id)
         else:
-            await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n**You Have Left** `{player['cur_hp']}` **Health.**",
+            await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n**You Have Left** `{player['cur_hp']}` **Health.**",
                                         reply_markup=battle_markup, parse_mode=enums.ParseMode.Markdown)
             await update_time(cq.from_user.id)
     elif enemy['attack_type'] == 'mag':
@@ -341,12 +341,12 @@ async def heal_cq(_, cq):
         player['cur_hp'] -= max((enemy_damage - player['magic_armour']), 0)
         await update_player(cq.from_user.id, player)
         if player['cur_hp'] <= 0:
-            await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Hurt', 'Scratched'])}` **You On** `{max((enemy_damage - player['magic_armour']), 0)}` **Damage.**\n\n"
+            await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Hurt', 'Scratched'])}` **You On** `{max((enemy_damage - player['magic_armour']), 0)}` **Damage.**\n\n"
                                             f"**You Perished ! :(**",
                                         reply_markup=death_markup, parse_mode=enums.ParseMode.MARKDOWN)
             await end_battle(cq.from_user.id)
         else:
-            await cq.edit_message_text(f"**Opponent** `{random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])}` **And Wounded You On** `{max((enemy_damage - player['magic_armour']), 0)}` **Damage.**\n\n"
+            await cq.edit_message_caption(f"**Opponent** `{random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])}` **And Wounded You On** `{max((enemy_damage - player['magic_armour']), 0)}` **Damage.**\n\n"
                                             f"**You Have Left** `{player['cur_hp']}` **Health.**",
                                         reply_markup=battle_markup, parse_mode=enums.ParseMode.MARKDOWN)
             await update_time(cq.from_user.id)
@@ -364,18 +364,18 @@ async def atck_cq(_, cq):
     crit = f"**Attack On** `{damage}` **Damage!**"
     win_markup = InlineKeyboardMarkup(
             inline_keyboard=[
-                [InlineKeyboardButton("Back", callback_data="leave_city")],
-                [InlineKeyboardButton("Keep Going", callback_data="enter_dungeon")]
+                [InlineKeyboardButton("Back 🔙", callback_data="leave_city")],
+                [InlineKeyboardButton("Keep Going 🚶‍♂️", callback_data="enter_dungeon")]
             ])
     death_markup = InlineKeyboardMarkup(
             inline_keyboard=[
-                [InlineKeyboardButton("Be Reborn", callback_data="revive")]
+                [InlineKeyboardButton("Be Reborn 💞", callback_data="revive")]
             ])
     battle_markup = InlineKeyboardMarkup(
             inline_keyboard=[
-                [InlineKeyboardButton("Estimate", callback_data="check")],
-                [InlineKeyboardButton("Attack", callback_data="attack")],
-                [InlineKeyboardButton("Drink The Potion", callback_data="heal")]
+                [InlineKeyboardButton("Estimate 🧮", callback_data="check")],
+                [InlineKeyboardButton("Attack ⚔️", callback_data="attack")],
+                [InlineKeyboardButton("Drink The Potion ⚱️", callback_data="heal")]
             ])
     if damage > player['attack']:
             crit = f"**Critical Attack On** `{damage}` **Damage!**"
@@ -390,7 +390,7 @@ async def atck_cq(_, cq):
             else:
                 player['exp'] = new_xp
             player['money'] += enemy['money']
-            await cq.edit_message_text(f"{crit}\n\n**You Won! Received** `{enemy['exp']}` **Experience And** `{enemy['money']}` **Coins.** {lup}",
+            await cq.edit_message_caption(f"{crit}\n\n**You Won! Received** `{enemy['exp']}` **Experience And** `{enemy['money']}` **Coins.** {lup}",
                                         reply_markup=win_markup, parse_mode=enums.ParseMode.MARKDOWN)
             player['exp'] += enemy['exp']
             player['money'] += enemy['money']
@@ -398,18 +398,18 @@ async def atck_cq(_, cq):
             await end_battle(cq.from_user.id)
     else:
         for i in range(0, 4):
-             await cq.edit_message_text(f"{crit}\n**The Enemy Has** `{enemy['hp']}` **Health.**\n\n"
+             await cq.edit_message_caption(f"{crit}\n**The Enemy Has** `{enemy['hp']}` **Health.**\n\n"
                                           f"`The Enemy Is Attacking`" + "." * (i % 4), parse_mode=enums.ParseMode.Markdown)
              await asyncio.sleep(0.6)
     if enemy['attack_type'] == 'phys':
                 enemy_damage = random.choices([enemy['attack'], enemy['attack'] * 1.5], weights=[0.8, 0.2])[0]
                 player['cur_hp'] -= max((enemy_damage - player['armour']), 0)
                 if player['cur_hp'] <= 0:
-                    await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n **You Perished! :(**",
+                    await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n **You Perished! :(**",
                                                 reply_markup=death_markup, parse_mode=enums.ParseMode.Markdown)
                     await end_battle(cq.from_user.id)
                 else:
-                    await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n"
+                    await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Wounded', 'Scratched'])}` **You On** `{max((enemy_damage - player['armour']), 0)}` **Damage.**\n\n"
                                                      f"**You Have Left** `{player['cur_hp']}` **Health.**",
                                                 reply_markup=battle_markup, parse_mode=enums.ParseMode.MARKDOWN)
                     await update_time(cq.from_user.id)
@@ -417,10 +417,10 @@ async def atck_cq(_, cq):
                 enemy_damage = random.choices([enemy['attack'], enemy['attack'] * 1.5], weights=[0.8, 0.2])[0]
                 player['cur_hp'] -= max((enemy_damage - player['magic_armour']), 0)
                 if player['cur_hp'] <= 0:
-                    await cq.edit_message_text(f"**Opponent** `{random.choice(['Hit', 'Hurt', 'Scratched'])}` **You On** `{max((enemy_damage - player['magic_armour']), 0)}` **Damage.**\n\n **You Perished ! :(**",
+                    await cq.edit_message_caption(f"**Opponent** `{random.choice(['Hit', 'Hurt', 'Scratched'])}` **You On** `{max((enemy_damage - player['magic_armour']), 0)}` **Damage.**\n\n **You Perished ! :(**",
                                                 reply_markup=death_markup, parse_mode=enums.ParseMode.MARKDOWN)
                 else:
-                    await cq.edit_message_text(f"**Opponent** `{random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])}` **And Wounded You On** `{max((enemy_damage - player['magic_armour']), 0)}` **Damage.**\n\n"
+                    await cq.edit_message_caption(f"**Opponent** `{random.choice(['Cast A Spell', 'Fireball Launched', 'Cast A Spell'])}` **And Wounded You On** `{max((enemy_damage - player['magic_armour']), 0)}` **Damage.**\n\n"
                                                     f"**You Have Left** `{player['cur_hp']}` **Health.**",
                                                 reply_markup=battle_markup, parse_mode=enums.ParseMode.MARKDOWN)
                     await update_time(cq.from_user.id)
