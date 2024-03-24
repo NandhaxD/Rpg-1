@@ -183,7 +183,7 @@ async def inventory_cq(_, cq):
         stats_markup = InlineKeyboardMarkup([[InlineKeyboardButton("Back 🔙", callback_data=f"stats_{cq.from_user.id}")]])
         cur_inv = await get_inventory(cq.from_user.id)
         if not cur_inv:
-            return await cq.edit_message_text("`No Inventory Found`")
+            return await cq.edit_message_text("`No Inventory Found`", reply_markup=stats_markup)
         else:
             inventory_markup = []
             text = ""
