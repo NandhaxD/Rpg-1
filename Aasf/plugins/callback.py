@@ -79,7 +79,7 @@ async def show_items_by_type_cq(client: Client, cq: CallbackQuery):
             buttons = []
             for item in items_list:
                 buttons.append([
-                    InlineKeyboardButton(f"{item['name']} - {item['cost']} coins", callback_data=f"buy_{user_id}_{item['id']}")
+                    InlineKeyboardButton(f"{item['name']} - {item['cost']} coins", callback_data=f"buy_{user_id}_{get_key(item, items)}")
                 ])
             buttons.append([back_shop])
             await cq.message.edit_text(f"**Items of type {item_type}:**", reply_markup=InlineKeyboardMarkup(buttons))
