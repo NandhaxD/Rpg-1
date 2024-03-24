@@ -10,14 +10,14 @@ async def start(_, message):
     town_markup = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton("Leave The City 🚶‍♂️", callback_data="leave_city")],
-            [InlineKeyboardButton("Inventory 💼", callback_data="inventory")],
-            [InlineKeyboardButton("Local Store 🛍️", callback_data="shop")],
-            [InlineKeyboardButton("Character Stats 👤", callback_data="stats")]
+            [InlineKeyboardButton("Inventory 💼", callback_data=f"inventory_{message.from_user.id}")],
+            [InlineKeyboardButton("Local Store 🛍️", callback_data=f"backshop_{message.from_user.id}")],
+            [InlineKeyboardButton("Character Stats 👤", callback_data=f"stats_{message.from_user.id}")]
         ])
     dungeon_gate_markup = InlineKeyboardMarkup(
         inline_keyboard=[
             [InlineKeyboardButton("Enter The Dungeon ⚔️", callback_data="enter_dungeon")],
-            [InlineKeyboardButton("Character Stats 👤", callback_data="stats")],
+            [InlineKeyboardButton("Character Stats 👤", callback_data=f"stats_{message.from_user.id}")],
             [InlineKeyboardButton("Back 🔙", callback_data="leave_city")]
         ])
     if not player:
