@@ -264,7 +264,7 @@ async def check_cq(_, cq):
         [InlineKeyboardButton("Attack", callback_data="attack")]
     ])
 
-    await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}/{mobs.get(await get_key(enemy['name']))[battle['probability']]}`\n" + f"**Attack:** `{enemy['attack']}` {'⚔️' if enemy['attack_type'] == 'phys' else '🪄'}\n" + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
+    await cq.edit_message_text(f"**{enemy['name']}**:\n\n" + f"**Health:** `{enemy['hp']}/{mobs.get(get_key(enemy['name'], mobs))[battle['probability']]}`\n" + f"**Attack:** `{enemy['attack']}` {'⚔️' if enemy['attack_type'] == 'phys' else '🪄'}\n" + f"**Protection:** `{enemy['armour']}` 🛡️ `{enemy['magic_armour']}` 🔮",
                                 reply_markup=check_markup, parse_mode=enums.ParseMode.MARKDOWN)
 
 
@@ -285,7 +285,8 @@ async def edungeon_cq(_, cq):
             [InlineKeyboardButton("Attack 🗡️", callback_data="attack")],
             [InlineKeyboardButton("Drink The Potion ⚱️", callback_data="heal")]
     ])
-    await cq.edit_message_text(f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
+    await cq.message.delete()
+    await app.send_photo(enemy["mob_img"], caption=f"`{enemy_name}` `{random.choice(['Got In The Way!', 'Jumped Out Of The Corner!', 'Crept Unnoticed!'])}`",
                                 reply_markup=battle_markup)
     await create_battle(cq.from_user.id, enemy, probabilities, cq)
 
