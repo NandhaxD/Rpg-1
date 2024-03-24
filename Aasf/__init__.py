@@ -7,7 +7,7 @@ app = Client(
     name="Aasf",
     api_id="14676558",
     api_hash="b3c4bc0ba6a4fc123f4d748a8cc39981",
-    bot_token="5617659434:AAG5MSWbbdUyymx2ZcQLCphIWwaki8ewiu8"
+    bot_token="6690815586:AAFh5kcrmt7Heggp-Syg66FDlGP9idUzQEI"
 )
 DEVS = [5456798232]
 app.start()
