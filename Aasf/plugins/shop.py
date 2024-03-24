@@ -2,7 +2,7 @@ from pyrogram import *
 from pyrogram.types import *
 
 from Aasf import app
-from Aasf.Database import *
+from Aasf.Database import get_player, items
 
 @app.on_message(filters.command("shop"))
 async def shop(client: Client, message: Message):
