@@ -38,6 +38,7 @@ async def request(_, cq):
     num = 0
     question = []
     options = []
+    answer= []
     explain = []
     q = await cq.message.chat.ask(f"**Now Send Me Your Question For The Quiz**", filtes=filters.text)
     question.append(q.text)
@@ -46,36 +47,46 @@ async def request(_, cq):
         num += 1
         op = await cq.message.chat.ask(f"**Now Send Me Your Option {num} For The Quiz**\n\n`There Should 4 Options`", filtes=filters.text)
         options.append(op.text)
+        await op.sent_message.delete()
         if num == 4:
             break
             
-    ans = await cq.message.chat.ask(f"**Now Tell Me Which Option Is The Corect One**", filtes=filters.text)
-    if not (ans.text).isdigit():
-        await ans.sent_message.edit_text("**Send The Correct Option As Digit**\n\n`ex:- 1`")
-    else:
-        if int(ans.text) >= 4
-            await ans.sent_message.edit_text("`There Are Just 4 Options`")
-         
-        options.append(op.text)
-
+    ans = await cq.message.chat.ask(f"**Now Tell Me Which Option Is The Corect One**\n\n`Note:- Send Your Option As Digit Like If Option 1 is correct send 1`", filtes=filters.text)
+    while not (ans.text).isdigit() or int(ans.text) > 4 or int(ans.text) == 0:
+        ans = await cq.message.chat.ask(f"**Now Tell Me Which Option Is The Corect One**\n\n`Note:- Send Your Option As Digit Like If Option 1 is correct send 1`", filtes=filters.text)
+        answer.append(int(ans.text))
+        
+    ex = await cq.message.chat.ask(f"**Now Give Me A Explanation For The Quiz**", filtes=filters.text)
+    explain.append(ex.text)
+    await ex.sent_message.delete()
+    
     text = f"**Question**: `{question[0]}`**:-**\n\n"
     text += f"**• Type:** `{type}`\n"
     ops = 1
     for x in options:
         text += f"**• Option {ops}**: `{options}`"
         ops += 1
-        
+    text += f"**• Answer:** `{answer[0]}`"
+    text += f"**• Explanation:** `{explain[0]}`"
+    keyboard = [[
+        InlineKeyboardButton("Confirm ✅", callback_data=f"review:{cq.from_user.id}"),
+        InlineKeyboardButton("Cancel 🚫", callback_data=f"delete:{cq.from_user.id}")
+    ]]
+    
     await bot.send_poll(
         chat_id=cq.from_user.id,
         question=question[0],
         options=[options[0], options[1], options[2], options[3]],
         explanation=explain[0],
-        correct_option_id=answer,
+        correct_option_id=int(answer[0]),
         close_date=close_t,
         type=enums.PollType.QUIZ,
         is_anonymous=False
     )
-    
+    await bot.send_message(cq.from_user.id, text)
+
+
+
 """
     # /upload -q {question} -1 {option1} -2 {option2} -3 {option3} -4 {option4} -a {answer}
     try:
