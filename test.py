@@ -9,6 +9,7 @@ from pyrogram.types import *
 
 app = bot
 types = [{"text": "General", "info": "just genral quiz"}, {"text": "rare", "info": "uff rarest quiz"}]
+requests = {}
 
 @app.on_message(filters.command('request', prefixes=config.PREFIXES))
 async def request(_, message):
@@ -29,6 +30,8 @@ async def delete(_, cq):
     if cq.from_user.id != user_id:
         return await cq.answer("This Wasn't Requested By You")
     else:
+        if requests[cq.from_user.id]:
+            requests.pop(cq.from_user.id)
         await cq.message.delete()
 
 @app.on_callback_query(filters.regex("request"))
@@ -82,7 +85,8 @@ async def request(_, cq):
         is_anonymous=False
     )
     await bot.send_message(cq.from_user.id, text, reply_markup=Inlinekeyboardmarkup(keyboard))
-
+    requests[cq.from_user.id] = {"question": question[0], "type": type, "options": options, "explanation": explain[0], "answer": int(answer[0])}
+    
 """
     # /upload -q {question} -1 {option1} -2 {option2} -3 {option3} -4 {option4} -a {answer}
     try:
