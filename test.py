@@ -37,27 +37,39 @@ async def delete(_, cq):
 @app.on_callback_query(filters.regex("request"))
 async def request(_, cq):
     type = str(cq.data.split(":")[1])
-    await cq.edit_text(f"**Alright You Choosed Quiz Type As** `{type}`")
+    await cq.edit_text(f"**Alright You Choosed Quiz Type As** `{type}`\n\n`Wants To Cancel This Progress At Any Moment Send /cancel`")
     num = 0
     question = []
     options = []
     answer = []
     explain = []
     q = await cq.message.chat.ask(f"**Now Send Me Your Question For The Quiz**", filters=filters.text)
+    if (q.text).split()[0] == "/cancel":
+        await q.sent_message.edit_text("`Process Cancelled ✅`")
+        exit()
     question.append(q.text)
     await q.sent_message.delete()
     while num < 4:
         num += 1
         op = await cq.message.chat.ask(f"**Now Send Me Your Option {num} For The Quiz**\n\n`There Should 4 Options`", filters=filters.text)
+        if (oq.text).split()[0] == "/cancel":
+            await oq.sent_message.edit_text("`Process Cancelled ✅`")
+            exit()
         options.append(op.text)
         await op.sent_message.delete()
 
     ans = await cq.message.chat.ask(f"**Now Tell Me Which Option Is The Corect One**\n\n`Note:- Send Your Option As Digit Like If Option 1 is correct send 1`", filters=filters.text)
-    while not ans.text.isdigit() or int(ans.text) > 4 or int(ans.text) == 0:
+    if (ans.text).split()[0] == "/cancel":
+        await ans.sent_message.edit_text("`Process Cancelled ✅`")
+        exit()
+    while not ans.text.isdigit() or int(ans.text) > 4 or int(ans.text) == 0 and not (ans.text).split()[0] == "/cancel": # if ans text == /cancel the process should be cancelled 
         ans = await cq.message.chat.ask(f"**Now Tell Me Which Option Is The Corect One**\n\n`Note:- Send Your Option As Digit Like If Option 1 is correct send 1`", filters=filters.text)
     answer.append(int(ans.text))
 
     ex = await cq.message.chat.ask(f"**Now Give Me A Explanation For The Quiz**", filters=filters.text)
+    if (ex.text).split()[0] == "/cancel":
+        await ex.sent_message.edit_text("`Process Cancelled ✅`")
+        exit()
     explain.append(ex.text)
     await ex.sent_message.delete()
 
