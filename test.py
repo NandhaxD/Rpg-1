@@ -110,16 +110,36 @@ async def review(_, cq):
         if not requests[cq.from_user.id]:
             return await cq.answer("Something Happened Sorry")
         else:
-            await cq.delete()
             uwu = requests[cq.from_user.id]
             explain = uwu["explanation"]
+            type = uwu["type"]
             question = uwu["question"]
             option1 = uwu["options"][0]
             option2 = uwu["options"][1]
             option3 = uwu["options"][2]
             option4 = uwu["options"][3]
             answer = int(uwu["answer"])
+            keyboard = [[
+                InlineKeyboardButton("Edit 📝", callback_data=f"edit"),
+                InlineKeyboardButton("Accept ✅", callback_data=f"accept"),
+                InlineKeyboardButton("Decline 🚫", callback_data=f"delete")
+            ]]
+            msg = await bot.send_message(chat_id=config.GROUP_ID,
+                text=f"""\n
+        **Type:** `{type}`
 
+        **Question:** `{question}`
+        **Option1:** `{option1}`
+        **Option2:** `{option2}`
+        **Option3:** `{option3}`
+        **Option4:** `{option4}`
+        **Explain:** `{explain}`
+        **Answer:** `{answer}`
+
+        **Question Requested By** `{user_id}`
+        """, reply_markup=InlineKeyboardMarkup(keyboard))
+            await cq.delete()
+            await app.send_message(
 
 
             
