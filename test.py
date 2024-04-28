@@ -13,16 +13,18 @@ requests = {}
 
 @app.on_message(filters.command('request', prefixes=config.PREFIXES))
 async def request(_, message):
-    if message.chat.type != enums.ChatType.PRIVATE:
-        return await message.reply_text("`Request Your Own Quiz On Dm`")
+    if m.chat.type != enums.ChatType.PRIVATE:
+        return await m.reply_text("`Request Your Own Quiz On Dm`")
     else:
+        if requests[m.from_user.id]:
+            return await message.reply_text("`Already Creating Quiz Process Going On`")
         buttons = []
         text = "**Choose Your Quiz Type: **\n\n"
         for x in types:
             buttons.append([InlineKeyboardButton(x["text"], callback_data=f"request:{x['text']}")])
-            buttons.append([InlineKeyboardButton("Cancel 🚫", callback_data=f"delete:{message.from_user.id}")])            
+            buttons.append([InlineKeyboardButton("Cancel 🚫", callback_data=f"delete:{m.from_user.id}")])            
             text += f"• `{x['text']}` - `{x['info']}`\n"
-        await message.reply_text(text, reply_markup=Inlinekeyboardmarkup(buttons))
+        await m.reply_text(text, reply_markup=Inlinekeyboardmarkup(buttons))
 
 @app.on_callback_query(filters.regex("delete"))
 async def delete(_, cq):
