@@ -12,12 +12,15 @@ types = [{"text": "General", "info": "just genral quiz"}, {"text": "rare", "info
 
 @app.on_message(filters.command('request', prefixes=config.PREFIXES))
 async def upload_data(_, message):
-    buttons = []
-    text = "**Choose Your Quiz Type: **\n\n"
-    for x in types:
-        buttons.append([InlineKeyboardButton(x["text"], callback_data=f"request:{x["text"]}")])
-        text += f"• `{x["text"]` - `{x["info"]}`}\n"
-    await message.reply_text(text, reply_markup=Inlinekeyboardmarkup(buttons))
+    if not message.chat.type == enums.ChatType.PRIVATE:
+        return await message.reply_text("`Request Your Own Quiz On Dm`")
+    else:
+        buttons = []
+        text = "**Choose Your Quiz Type: **\n\n"
+        for x in types:
+            buttons.append([InlineKeyboardButton(x["text"], callback_data=f"request:{x["text"]}")])
+            text += f"• `{x["text"]` - `{x["info"]}`}\n"
+        await message.reply_text(text, reply_markup=Inlinekeyboardmarkup(buttons))
 
 """
     # /upload -q {question} -1 {option1} -2 {option2} -3 {option3} -4 {option4} -a {answer}
