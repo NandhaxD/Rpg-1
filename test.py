@@ -11,7 +11,7 @@ app = bot
 types = [{"text": "General", "info": "just genral quiz"}, {"text": "rare", "info": "uff rarest quiz"}]
 
 @app.on_message(filters.command('request', prefixes=config.PREFIXES))
-async def upload_data(_, message):
+async def request(_, message):
     if not message.chat.type == enums.ChatType.PRIVATE:
         return await message.reply_text("`Request Your Own Quiz On Dm`")
     else:
@@ -19,9 +19,63 @@ async def upload_data(_, message):
         text = "**Choose Your Quiz Type: **\n\n"
         for x in types:
             buttons.append([InlineKeyboardButton(x["text"], callback_data=f"request:{x["text"]}")])
+            buttons.append([InlineKeyboardButton("Cancel 🚫", callback_data=f"delete:{message.from_user.id}")])            
             text += f"• `{x["text"]` - `{x["info"]}`}\n"
         await message.reply_text(text, reply_markup=Inlinekeyboardmarkup(buttons))
 
+@app.on_callback_query(filters.regex("delete"))
+async def delete(_, cq):
+    user_id = int(cq.data.split("_")[1])
+    if not cq.from_user.id == user_id:
+        return await cq.answer("This Wasn't Requested By You")
+    else:
+        await cq.message.delete()
+        
+@app.on_callback_query(filters.regex("request"))
+async def request(_, cq):
+    type = str(cq.data.split(":")[1])
+    await cq.edit_text(f"**Alright You Choosed Quiz Type As** `{type}`")
+    num = 0
+    question = []
+    options = []
+    explain = []
+    q = await cq.message.chat.ask(f"**Now Send Me Your Question For The Quiz**", filtes=filters.text)
+    question.append(q.text)
+    await q.sent_message.delete()
+    while True:
+        num += 1
+        op = await cq.message.chat.ask(f"**Now Send Me Your Option {num} For The Quiz**\n\n`There Should 4 Options`", filtes=filters.text)
+        options.append(op.text)
+        if num == 4:
+            break
+            
+    ans = await cq.message.chat.ask(f"**Now Tell Me Which Option Is The Corect One**", filtes=filters.text)
+    if not (ans.text).isdigit():
+        await ans.sent_message.edit_text("**Send The Correct Option As Digit**\n\n`ex:- 1`")
+    else:
+        if int(ans.text) >= 4
+            await ans.sent_message.edit_text("`There Are Just 4 Options`")
+         
+        options.append(op.text)
+
+    text = f"**Question**: `{question[0]}`**:-**\n\n"
+    text += f"**• Type:** `{type}`\n"
+    ops = 1
+    for x in options:
+        text += f"**• Option {ops}**: `{options}`"
+        ops += 1
+        
+    await bot.send_poll(
+        chat_id=cq.from_user.id,
+        question=question[0],
+        options=[options[0], options[1], options[2], options[3]],
+        explanation=explain[0],
+        correct_option_id=answer,
+        close_date=close_t,
+        type=enums.PollType.QUIZ,
+        is_anonymous=False
+    )
+    
 """
     # /upload -q {question} -1 {option1} -2 {option2} -3 {option3} -4 {option4} -a {answer}
     try:
