@@ -100,7 +100,30 @@ async def request(_, cq):
     )
     await bot.send_message(cq.from_user.id, text, reply_markup=Inlinekeyboardmarkup(keyboard))
     requests[cq.from_user.id] = {"question": question[0], "type": type, "options": options, "explanation": explain[0], "answer": int(answer[0])}
-    
+
+@app.on_callback_query(filters.regex("review"))
+async def review(_, cq):
+    user_id = int(cq.data.split("_")[1])
+    if cq.from_user.id != user_id:
+        return await cq.answer("This Wasn't Requested By You")
+    else:
+        if not requests[cq.from_user.id]:
+            return await cq.answer("Something Happened Sorry")
+        else:
+            await cq.delete()
+            uwu = requests[cq.from_user.id]
+            explain = uwu["explanation"]
+            question = uwu["question"]
+            option1 = uwu["options"][0]
+            option2 = uwu["options"][1]
+            option3 = uwu["options"][2]
+            option4 = uwu["options"][3]
+            answer = int(uwu["answer"])
+
+
+
+            
+        
 """
     # /upload -q {question} -1 {option1} -2 {option2} -3 {option3} -4 {option4} -a {answer}
     try:
